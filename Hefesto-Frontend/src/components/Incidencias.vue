@@ -282,7 +282,6 @@
                     class="glassmorphic-select"
                   />
             </div>
-            <p>Filtros</p>
           </div>
         </div>
       </template>
@@ -944,37 +943,82 @@ const handleCerrarIncidencia = async () => {
     }
 }
 </script>
-<style scoped>
+<style lang="scss" scoped>
+// Definición de colores
+$color-white: #fff;
+$color-light-gray: #f8f8f8;
+$color-gray: #ddd;
+$color-dark-gray: #666;
+$color-shadow: rgba(0, 0, 0, 0.1);
+$color-shadow-hover: rgba(0, 0, 0, 0.2);
+$color-high-priority: #FF5252;
+$color-medium-priority: #FFCA28;
+$color-low-priority: #4CAF50;
+$color-new: #B89B00;
+$color-pending: #B89B00;
+$color-maintenance: #000000;
+$color-closed: #000000;
+$color-in-progress: #600484;
+$color-primary: rgba(0, 123, 255, 0.9);
+$color-danger: rgba(255, 0, 0, 0.8);
+$color-text:#333;
+
+
+// Estilos base para incidencias
+$incidencia-item-padding: 15px;
+$incidencia-item-margin-bottom: 10px;
+$incidencia-item-border-radius: 8px;
+$incidencia-item-gap: 15px;
+$incidencia-date-min-width: 100px;
+$incidencia-marker-width: 5px;
+$incidencia-marker-height: 40px;
+$incidencia-marker-margin-right: 5px;
+$incidencia-text-margin-left: 10px;
+$incidencia-status-padding: 6px 10px;
+$incidencia-status-border-radius: 20px;
+
+@mixin flex-center($justify: center, $align: center, $direction: row){
+    display: flex;
+    justify-content: $justify;
+    align-items: $align;
+    flex-direction: $direction;
+}
+
+@mixin glassmorphic-card(){
+    background: rgba($color-white, 0.7) !important;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba($color-white, 0.05) !important;
+    box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.3);
+}
+
+
 .incidencia-panel {
   width: 100%;
   padding: 20px;
-  background-color: #f8f8f8;
+  background-color: $color-light-gray;
   border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px $color-shadow;
 }
 
 .incidencia-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
+    @include flex-center(space-between, center);
+    margin-bottom: 20px;
 }
 
 .create-incidencia-btn {
-  background-color: white;
-  border: 1px solid #ddd;
+    @include flex-center(center, center);
+  background-color: $color-white;
+  border: 1px solid $color-gray;
   border-radius: 5px;
   padding: 12px 20px;
   cursor: pointer;
   font-size: 1rem;
   font-weight: 500;
-  display: flex;
-  align-items: center;
   gap: 8px;
-}
 
-.create-incidencia-btn:hover {
-  background-color: #f0f0f0;
+  &:hover {
+    background-color: #f0f0f0;
+  }
 }
 
 .plus-icon {
@@ -983,25 +1027,23 @@ const handleCerrarIncidencia = async () => {
 }
 
 .incidencia-stats {
-  display: flex;
+  @include flex-center($justify: flex-start, $align: center);
   gap: 10px;
 }
 
 .incidencia-stat-box {
-  background-color: white;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  background-color: $color-white;
+    @include flex-center(center, center, column);
   padding: 15px;
   border-radius: 5px;
   min-width: 140px;
   gap: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
+  box-shadow: 0 2px 4px $color-shadow;
 
-.incidencia-stat-box.active {
-  background-color: #e3fae8;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  &.active {
+    background-color: #e3fae8;
+    box-shadow: 0 0 10px $color-shadow-hover;
+  }
 }
 
 .title {
@@ -1018,26 +1060,28 @@ const handleCerrarIncidencia = async () => {
 }
 
 .incidencia-list {
-  background-color: rgba(255, 255, 255, 0.7) !important;
+    @include glassmorphic-card();
   border-radius: 5px;
   padding: 20px;
   margin-top: 20px;
 }
 
 .incidencia-list-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+    @include flex-center(space-between, center);
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   padding: 0 10px 15px 10px;
   margin-bottom: 15px;
   font-size: 0.8rem;
-  color: #666;
+  color: $color-dark-gray;
 }
 
 .priority-legend {
-  display: flex;
+    @include flex-center($justify: flex-start, $align: center);
   gap: 20px;
+
+  span{
+      margin-right: 10px;
+  }
 }
 
 .priority-dot {
@@ -1048,573 +1092,507 @@ const handleCerrarIncidencia = async () => {
   margin-right: 2px;
 }
 
-.alta {
-  background-color: #FF5252;
+// Bucle para generar las clases de prioridad
+$priorities: (alta: $color-high-priority, media: $color-medium-priority, baja: $color-low-priority);
+
+@each $priority-name, $priority-color in $priorities {
+  .#{$priority-name} {
+    background-color: $priority-color;
+  }
 }
 
-.media {
-  background-color: #FFCA28;
-}
-
-.baja {
-  background-color: #4CAF50;
-}
 
 .incidencia-item {
-  display: flex;
-  padding: 15px;
-  margin-bottom: 10px;
-  border-radius: 8px;
-  transition: all 0.2s ease;
-  gap: 15px;
-  align-items: flex-start;
-  cursor: pointer;
+    @include flex-center(flex-start, flex-start);
+    padding: $incidencia-item-padding;
+    margin-bottom: $incidencia-item-margin-bottom;
+    border-radius: $incidencia-item-border-radius;
+    transition: all 0.2s ease;
+    gap: $incidencia-item-gap;
+    cursor: pointer;
+
+    &:hover {
+        background-color: rgba($color-white, 0.1);
+    }
 }
 
-.incidencia-item:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
 
 .incidencia-date {
-  display: flex;
-  flex-direction: column;
-  font-size: 0.8rem;
-  color: #666;
-  min-width: 100px;
-  flex-shrink: 0;
-}
+    @include flex-center(flex-start, flex-start, column);
+    font-size: 0.8rem;
+    color: $color-dark-gray;
+    min-width: $incidencia-date-min-width;
+    flex-shrink: 0;
 
-.incidencia-date span:first-child {
-  font-weight: 500;
+    span:first-child {
+        font-weight: 500;
+    }
 }
 
 .incidencia-content {
-  display: flex;
-  align-items: flex-start;
-  gap: 20px;
-  flex: 1;
+    @include flex-center(flex-start, flex-start);
+    gap: 20px;
+    flex: 1;
 }
+
 
 .priority-marker {
-  width: 5px;
-  height: 40px;
-  border-radius: 2px;
-  flex-shrink: 0;
-  margin-right: 5px;
+    width: $incidencia-marker-width;
+    height: $incidencia-marker-height;
+    border-radius: 2px;
+    flex-shrink: 0;
+    margin-right: $incidencia-marker-margin-right;
 }
+
 
 .incidencia-text {
-  display: flex;
-  flex-direction: column;
-  font-size: 0.9rem;
-  line-height: 1.3;
-  flex: 1;
-  margin-left: 10px;
+    @include flex-center(flex-start, flex-start, column);
+    font-size: 0.9rem;
+    line-height: 1.3;
+    flex: 1;
+    margin-left: $incidencia-text-margin-left;
 }
 
+
 .incidencia-status-box {
-  display: flex;
-  align-items: center;
+  @include flex-center();
 }
 
 .incidencia-status {
-  padding: 6px 10px;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 500;
-}
-
-.nueva {
-  background-color: rgba(184, 155, 0, 0.17);
-  color: #B89B00;
-}
-
-.pendiente {
-  background-color: rgba(184, 155, 0, 0.17);
-  color: #B89B00;
-}
-
-.mantenimiento {
-  background-color: rgba(0, 0, 0, 0.17);
-  color: #000000;
-}
-
-.cerrada {
-  background-color: rgba(0, 0, 0, 0.17);
-  color: #000000;
-}
-
-.en-curso {
-  background-color: rgba(96, 4, 132, 0.17);
-  color: #600484;
-}
-
-.create-incidencia-card {
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.create-incidencia-card:hover {
-  transform: scale(1.02);
-  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.7);
-}
-
-.card-body-same-height {
-  min-height: 100px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.glassmorphic-card {
-  background: rgba(255, 255, 255, 0.7) !important;
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
-  box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.3);
-}
-
-.pendiente-h2 {
-  color: #B89B00;
-  font-size: 70px;
-}
-
-.curso-h2 {
-  color: #600484;
-  font-size: 70px;
-}
-
-.cerrado-h2 {
-  color: #000000;
-  font-size: 70px;
-}
-
-.text-muted {
-  color: rgba(54, 54, 54, 0.6) !important;
-}
-
-.h3 {
-  color: rgba(255, 255, 255, 0.9);
-}
-
-table {
-  background-color: transparent !important;
-}
-
-.table-responsive {
-  max-height: calc(100vh - 300px);
-  overflow-y: auto;
-  background-color: transparent !important;
-}
-
-.table > :not(caption) > * > * {
-  background-color: transparent !important;
-}
-
-canvas {
-  max-height: 300px;
-}
-
-.status-dot {
-  display: inline-block;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-}
-
-.card.h-100 {
-  height: calc(100vh - 200px) !important;
-}
-
-.card-body {
-  padding: 1.5rem;
-}
-
-.card-bodytotal {
-  padding: 1.7rem;
-}
-
-.incidencias-container {
-  max-height: 600px;
-  overflow-y: auto;
-  padding: 0 10px;
-}
-
-/* Add smooth scrollbar for the tickets container */
-.incidencias-container::-webkit-scrollbar {
-  width: 8px;
-}
-
-.incidencias-container::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-}
-
-.incidencias-container::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
-}
-
-.incidencias-container::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.3);
-}
-
-.form-group {
-  margin-bottom: 1rem;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: #666;
-}
-
-.popup-btn1 {
-  background: rgba(0, 123, 255, 0.9);
-  color: white;
-  border: none;
-  text-align: center;
-  font-size: 1rem;
-  padding: 0.8rem 1.8rem;
-  border-radius: 2rem;
-  cursor: pointer;
-}
-
-.popup-btn.primary {
-  background-color: rgba(255, 255, 255, 0.8);
-  color: #000000;
-}
-.popup-btn.danger {
-    background-color: rgba(255, 0, 0, 0.8);
-    color: white;
-}
-
-.popup-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.4);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.popup-card {
-  width: 700px;
-  min-height: 300px;
-  background: rgba(255, 255, 255, 0.7);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 1.5rem;
-  padding: 2rem;
-  z-index: 10;
-  color: #333;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  /* Asegura que el contenido no se salga del borde */
-}
-
-.popup-title {
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
-  text-align: center;
-  color: #222;
-}
-
-.popup-subtitle {
-  font-size: 1.2rem;
-  margin-bottom: 2rem;
-  text-align: center;
-  color: #444;
-}
-
-.popup-content {
-    margin-bottom: 2rem;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    /*flex: 1;*/ /* Eliminar o cambiar a flex: none */
-    justify-content: flex-start;
-    /* Modificado */
-    overflow-y: auto;
-    /* Añade scroll vertical si el contenido excede el contenedor */
-    padding-right: 10px;
-    gap: 1rem;
-}
-
-.popup-actions {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin-top: 20px;
-}
-
-.popup-btn {
-  background: none;
-  border: none;
-  text-align: center;
-  font-size: 1rem;
-  padding: 0.8rem 1.8rem;
-  border-radius: 2rem;
-  cursor: pointer;
-}
-
-.glassmorphic-btn {
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #fff;
-  /* Text color */
-  transition: background-color 0.3s ease;
-  /* Smooth transition for hover effect */
-}
-
-.glassmorphic-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.popup-btn.primary {
-  background-color: rgba(255, 255, 255, 0.8);
-  color: #000000;
-}
-
-.glassmorphic-btn.cancel-btn {
-  color: #000;
-  background: rgba(255, 255, 255, 0.8);
-}
-
-.glassmorphic-btn.cancel-btn:hover {
-  background: rgba(255, 255, 255, 0.9);
-}
-
-
-.custom-textarea {
-  width: 100%;
-  padding: 10px;
-  margin-top: 5px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-  /* Para que padding no aumente el ancho */
-  font-size: 1rem;
-  line-height: 1.5;
-  transition: border-color 0.3s ease;
-  background-color: rgba(255, 255, 255, 0.5);
-  /* Fondo semi-transparente */
-  color: #333;
-  /* Color del texto */
-}
-
-.custom-textarea:focus {
-  border-color: #007bff;
-  outline: none;
-  /* Remueve el borde de focus predeterminado del navegador */
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-  /* Agrega una sombra al enfocar */
-}
-
-.custom-textarea::placeholder {
-  color: #999;
-  /* Color del placeholder */
-}
-.action-buttons {
-    margin-top: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    align-items: center;
-}
-
-:root {
-    --color-primario: #007bff;
-}
-
-.priority-filter {
-  cursor: pointer; /* Cambia el cursor a "mano" */
-  position: relative; /* Necesario para posicionar la barra */
-  padding-bottom: 3px; /* Espacio para la barra */
-}
-
-.priority-filter:hover {
-  opacity: 0.8; /* Reduce la opacidad al pasar el ratón */
-}
-
-.priority-filter.selected {
-  /* Añade el subrayado */
-  text-decoration-color: var(--color-primario); /* Color del subrayado */
-  text-decoration-thickness: 4px; /* Grosor del subrayado */
-}
-
-
-.boton-filtro{
-  cursor: pointer;
-  position: relative;
-  padding: 5px;
-  display: flex;
-  align-items: center;
-  border-radius: 12px;
-  border: 0.5px solid black;
-}
-
-.boton-filtro:hover{
-  opacity: 0.8;
-}
-
-
-
-
-
-
-/* Ajusta el espaciado entre los elementos de la leyenda */
-.priority-legend span {
-  margin-right: 10px; /* Ajusta el valor según sea necesario */
-}
-
-
-.imagen-filtro{
-  width: 20px;
-}
-
-
-.glassmorphic-select{
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 10px;
-  padding: 10px;
-  color: #333;
-  width: 300px;
-}
-
-.search-bar {
-  margin-bottom: 20px;
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  justify-content: center;
-}
-@media (max-width: 768px) {
-  .row {
-    --bs-gutter-x: 0.5rem !important;
-  }
-  .col-sm-6 {
-    flex: 0 0 auto;
-    width: 50% !important;
-    max-width: 50% !important;
-  }
-
-  .incidencia-list {
-    padding: 10px;
-    margin-top: 10px;
-  }
-
-  .incidencia-list-header {
-    font-size: 0.9rem;
-    padding: 0 5px 10px 5px;
-    margin-bottom: 10px;
-  }
-
-  .incidencia-item {
-    padding: 10px;
-    margin-bottom: 5px;
-    gap: 10px;
-  }
-
-  .incidencia-date {
-    min-width: 70px;
-    font-size: 0.7rem;
-  }
-
-  .incidencia-content {
-    gap: 10px;
-  }
-
-  .priority-marker {
-    height: 30px;
-    margin-right: 3px;
-  }
-
-  .incidencia-text {
+    padding: $incidencia-status-padding;
+    border-radius: $incidencia-status-border-radius;
     font-size: 0.8rem;
-    margin-left: 5px;
+    font-weight: 500;
+}
+// Bucle para generar las clases de estado
+$estados: (nueva: $color-new, pendiente: $color-pending, mantenimiento: $color-maintenance, cerrada: $color-closed, "en-curso": $color-in-progress);
+@each $estado-name, $estado-color in $estados{
+    .#{$estado-name}{
+        background-color: rgba($estado-color, 0.17);
+        color: $estado-color;
+    }
+}
+.create-incidencia-card {
+    cursor: pointer;
+    transition: all 0.3s;
+  
+    &:hover {
+      transform: scale(1.02);
+      box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.7);
+    }
   }
-
-  .incidencia-status {
-    padding: 4px 8px;
-    font-size: 0.7rem;
+  
+  .card-body-same-height {
+    min-height: 100px;
+      @include flex-center(center, center, column);
   }
-
-  .card-body {
-    padding: 1rem;
+  
+  .glassmorphic-card {
+     @include glassmorphic-card();
   }
-  .card-bodytotal {
-    padding: 1rem;
+  
+  .pendiente-h2 {
+    color: $color-pending;
+    font-size: 70px;
   }
-  .pendiente-h2,
-  .curso-h2,
+  
+  .curso-h2 {
+    color: $color-in-progress;
+    font-size: 70px;
+  }
+  
   .cerrado-h2 {
-    font-size: 45px;
+    color: $color-maintenance;
+    font-size: 70px;
   }
-  .action-buttons {
-    flex-direction: row;
-    flex-wrap: wrap;
+  .total-h2{
+    color: $color-white;
+    font-size: 70px;
+}
+  
+  .text-muted {
+    color: rgba(54, 54, 54, 0.6) !important;
   }
-  .popup-card {
-    width: 90%;
-    min-height: auto;
-    max-height: 80vh;
-    padding: 1rem;
+  
+  .h3 {
+    color: rgba($color-white, 0.9);
   }
-  .popup-content{
+  
+  table {
+    background-color: transparent !important;
+  }
+  
+  .table-responsive {
+    max-height: calc(100vh - 300px);
+    overflow-y: auto;
+    background-color: transparent !important;
+  }
+  
+  .table > :not(caption) > * > * {
+    background-color: transparent !important;
+  }
+  
+  canvas {
+    max-height: 300px;
+  }
+  
+  .status-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+  
+  .card.h-100 {
+    height: calc(100vh - 200px) !important;
+  }
+  
+  .card-body {
+    padding: 1.5rem;
+  }
+    .card-bodytotal {
+      padding: 1.7rem;
+    }
+  
+  .incidencias-container {
+    max-height: 600px;
+    overflow-y: auto;
+    padding: 0 10px;
+  }
+  
+  /* Add smooth scrollbar for the tickets container */
+  .incidencias-container::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .incidencias-container::-webkit-scrollbar-track {
+    background: rgba($color-white, 0.1);
+    border-radius: 4px;
+  }
+  
+  .incidencias-container::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+  }
+  
+  .incidencias-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+  }
+  
+  .form-group {
     margin-bottom: 1rem;
   }
-
-  .popup-title {
-    font-size: 1.5rem;
-    margin-bottom: 0.8rem;
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: $color-dark-gray;
   }
-
-  .popup-subtitle {
-    font-size: 1rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .popup-actions {
-    margin-top: 10px;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  .popup-btn, .popup-btn1 {
-    font-size: 0.9rem;
-    padding: 0.6rem 1.2rem;
-    border-radius: 1.5rem;
+  
+  .popup-btn1 {
+    background: $color-primary;
+    color: $color-white;
+    border: none;
     text-align: center;
+    font-size: 1rem;
+    padding: 0.8rem 1.8rem;
+    border-radius: 2rem;
+    cursor: pointer;
   }
-  .incidencias-container{
-    padding: 0 5px;
+  
+  .popup-btn.primary {
+    background-color: rgba($color-white, 0.8);
+    color: #000000;
   }
-  .priority-legend {
-    gap: 10px;
-    font-size: 0.8rem;
-  }
-   .boton-filtro {
-    padding: 3px;
-  }
-    .imagen-filtro{
-        width: 15px;
+    .popup-btn.danger {
+        background-color: $color-danger;
+        color: $color-white;
     }
-
-  .col-12 {
-    width: 100% !important;
-    max-width: 100% !important;
+  
+  .popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+     @include flex-center();
+    z-index: 1000;
   }
+  
+  .popup-card {
+    width: 700px;
+    min-height: 300px;
+      @include glassmorphic-card();
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    border-radius: 1.5rem;
+    padding: 2rem;
+    z-index: 10;
+    color: $color-text;
+    @include flex-center(flex-start, flex-start, column);
+    overflow: hidden;
+    /* Asegura que el contenido no se salga del borde */
+  }
+  
+  .popup-title {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    color: #222;
+  }
+  
+  .popup-subtitle {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+    color: #444;
+  }
+  
+  .popup-content {
+    margin-bottom: 2rem;
+      @include flex-center(flex-start, flex-start, column);
+    overflow-y: auto;
+    padding-right: 10px;
+    gap: 1rem;
+  }
+  
+  .popup-actions {
+    @include flex-center();
+    gap: 1rem;
+    margin-top: 20px;
+  }
+  
+  .popup-btn {
+    background: none;
+    border: none;
+    text-align: center;
+    font-size: 1rem;
+    padding: 0.8rem 1.8rem;
+    border-radius: 2rem;
+    cursor: pointer;
+  }
+  
+  .glassmorphic-btn {
+    background: rgba($color-white, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba($color-white, 0.2);
+    color: $color-white;
+    transition: background-color 0.3s ease;
+      &:hover {
+          background: rgba($color-white, 0.3);
+      }
+  }
+  
+  
+  .popup-btn.primary {
+    background-color: rgba($color-white, 0.8);
+    color: #000000;
+  }
+  
+  .glassmorphic-btn.cancel-btn {
+    color: #000;
+    background: rgba($color-white, 0.8);
+      &:hover {
+          background: rgba($color-white, 0.9);
+      }
+    }
+  
+  
+  .custom-textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 1rem;
+    line-height: 1.5;
+    transition: border-color 0.3s ease;
+    background-color: rgba($color-white, 0.5);
+    color: $color-text;
+      &:focus {
+          border-color: #007bff;
+          outline: none;
+          box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+      }
+      &::placeholder {
+          color: #999;
+      }
+  }
+  .action-buttons {
+      margin-top: 1rem;
+        @include flex-center(center, center, column);
+    gap: 0.5rem;
+  }
+  :root {
+    --color-primario: #007bff;
+  }
+  
+  .priority-filter {
+    cursor: pointer;
+    position: relative;
+    padding-bottom: 3px;
+      &:hover {
+          opacity: 0.8;
+      }
+      &.selected {
+          text-decoration-color: var(--color-primario);
+          text-decoration-thickness: 4px;
+      }
+  }
+  
+  
+  .boton-filtro{
+    cursor: pointer;
+    position: relative;
+    padding: 5px;
+      @include flex-center();
+    border-radius: 12px;
+    border: 0.5px solid black;
+      &:hover {
+          opacity: 0.8;
+      }
+  }
+  
+  
+  
+  .imagen-filtro{
+    width: 20px;
+  }
+  
+  
+  .glassmorphic-select{
+    background: rgba($color-white, 0.2);
+    border: 1px solid rgba($color-white, 0.3);
+    border-radius: 10px;
+    padding: 10px;
+    color: $color-text;
+    width: 300px;
+  }
+  
+  .search-bar {
+    margin-bottom: 20px;
+      @include flex-center();
+    gap: 10px;
+  }
+  @media (max-width: 768px) {
+    .row {
+      --bs-gutter-x: 0.5rem !important;
+    }
+    .col-sm-6 {
+      flex: 0 0 auto;
+      width: 50% !important;
+      max-width: 50% !important;
+    }
+  
+    .incidencia-list {
+      padding: 10px;
+      margin-top: 10px;
+    }
+  
+    .incidencia-list-header {
+      font-size: 0.9rem;
+      padding: 0 5px 10px 5px;
+      margin-bottom: 10px;
+    }
+  
+    .incidencia-item {
+      padding: 10px;
+      margin-bottom: 5px;
+      gap: 10px;
+    }
+  
+    .incidencia-date {
+      min-width: 70px;
+      font-size: 0.7rem;
+    }
+  
+    .incidencia-content {
+      gap: 10px;
+    }
+  
+    .priority-marker {
+      height: 30px;
+      margin-right: 3px;
+    }
+  
+    .incidencia-text {
+      font-size: 0.8rem;
+      margin-left: 5px;
+    }
+  
+    .incidencia-status {
+      padding: 4px 8px;
+      font-size: 0.7rem;
+    }
+  
+    .card-body {
+      padding: 1rem;
+    }
+      .card-bodytotal {
+          padding: 1rem;
+      }
+    .pendiente-h2,
+    .curso-h2,
+    .cerrado-h2,
+        .total-h2 {
+      font-size: 45px;
+    }
+    .action-buttons {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+      .popup-card {
+          width: 90%;
+          min-height: auto;
+          max-height: 80vh;
+          padding: 1rem;
+      }
+      .popup-content{
+          margin-bottom: 1rem;
+      }
+  
+      .popup-title {
+          font-size: 1.5rem;
+          margin-bottom: 0.8rem;
+      }
+  
+      .popup-subtitle {
+          font-size: 1rem;
+          margin-bottom: 1.5rem;
+      }
+  
+      .popup-actions {
+          margin-top: 10px;
+          gap: 0.5rem;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .popup-btn, .popup-btn1 {
+          font-size: 0.9rem;
+          padding: 0.6rem 1.2rem;
+          border-radius: 1.5rem;
+          text-align: center;
+      }
+      .incidencias-container{
+          padding: 0 5px;
+      }
+    .priority-legend {
+      gap: 10px;
+      font-size: 0.8rem;
+    }
+    .boton-filtro {
+          padding: 3px;
+      }
+      .imagen-filtro{
+          width: 15px;
+      }
 
-}
+      .col-12 {
+          width: 100% !important;
+          max-width: 100% !important;
+      }
 
+  }
 </style>

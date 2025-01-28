@@ -136,7 +136,7 @@ Route::prefix('v1')->group(function () {
     });
     Route::prefix('usuario')->group(function () {
         Route::middleware('auth:api')->group(function () {
-           Route::get('all',[UserController::class, 'all'])->middleware('admin');
+           Route::get('all',[UserController::class, 'all']);
            Route::get('show/{usuario}',[UserController::class, 'show'])->middleware('admin');
             Route::put('update/{usuario}',[UserController::class, 'update'])->middleware('admin');
             Route::put('enable/{usuario}',[UserController::class, 'enable'])->middleware('admin');

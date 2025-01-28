@@ -9,8 +9,8 @@
                 <div class="card-body text-center">
                   <h2 class="card-text">Usuarios</h2>
                 </div>
-                <div class="card-body text-center">
-                  <img src="../assets/images/icons/usuarios.svg" width="100" />
+                <div class="card-body text-center image-container">
+                  <img src="../assets/images/icons/usuarios.svg"  />
                 </div>
               </div>
             </button>
@@ -19,8 +19,8 @@
                 <div class="card-body text-center">
                   <h2 class="card-text">Campuses</h2>
                 </div>
-                <div class="card-body text-center">
-                  <img src="../assets/images/icons/campuses.svg" width="100" />
+                 <div class="card-body text-center image-container">
+                  <img src="../assets/images/icons/campuses.svg" />
                 </div>
               </div>
             </button>
@@ -33,21 +33,21 @@
                 <div class="card-body text-center">
                   <h2 class="card-text">Secciones</h2>
                 </div>
-                <div class="card-body text-center">
-                  <img width="144" src="../assets/images/icons/secciones.svg" />
+                <div class="card-body text-center image-container">
+                  <img src="../assets/images/icons/secciones.svg" />
                 </div>
               </div>
             </button>
             <button class="glass-card mb-4" @click="openMaquinaCrud">
-              <div class="d-flex justify-content-between align-items-center h-100">
-                <div class="card-body text-center">
-                  <h2 class="card-text">Maquinas</h2>
-                </div>
-                <div class="card-body text-center">
-                  <img width="250" src="../assets/images/icons/maquinas.svg" />
-                </div>
-              </div>
-            </button>
+  <div class="d-flex justify-content-between align-items-center h-100">
+    <div class="card-body text-center">
+      <h2 class="card-text">Maquinas</h2>
+    </div>
+    <div class="card-body text-center image-container">
+      <img class="maquinaImage" src="../assets/images/icons/maquinas.svg" />
+    </div>
+  </div>
+</button>
           </div>
         </div>
       </div>
@@ -311,15 +311,25 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
+$white-01: rgba(255, 255, 255, 0.1);
+$white-02: rgba(255, 255, 255, 0.2);
+$white-03: rgba(255, 255, 255, 0.3);
+$white-05: rgba(255, 255, 255, 0.5);
+$white-06: rgba(255, 255, 255, 0.6);
+$white-07: rgba(255, 255, 255, 0.7);
+$white-08: rgba(255, 255, 255, 0.8);
+$white-09: rgba(255, 255, 255, 0.9);
+@mixin glassmorphic-card(){
+  background: rgba($white-09, 0.7) !important;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba($white-09, 0.05) !important;
+    box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.3);
+}
 .glass-card {
-  background: rgba(255, 255, 255, 0.2);
+  @include glassmorphic-card();
   border-radius: 16px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
   width: 100%;
-  height: 300px; 
+  height: 300px;
   cursor: pointer;
   transition: transform 0.2s ease-in-out;
   display: flex;
@@ -333,13 +343,31 @@ onMounted(async () => {
   .card-text {
     margin-top: 0;
     color: #333;
-    font-size: 2rem; 
+    font-size: 2rem;
   }
 
   .card-body {
     padding: 24px;
     text-align: center;
   }
+}
+
+.image-container {
+    width: 200px;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+  img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+    .maquinaImage{
+        width: 200px;
+        height: 200px;
+    }
 }
 
 .fade {

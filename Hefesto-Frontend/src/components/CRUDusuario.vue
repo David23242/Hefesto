@@ -651,6 +651,7 @@ $text-color: #333;
   td {
     background: $white-02;
     padding: 15px;
+    line-height: 1.8;
     text-align: left;
     border: none;
   }
