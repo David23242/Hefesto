@@ -1,0 +1,12 @@
+
+@import './_variables.scss';
+
+.glassmorphic-container {
+  background: $white-01;
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 8px 32px 0 $shadow-color;
+  border: 1px solid $white-18;
+  color: $text-color;
+}

@@ -1,0 +1,15 @@
+@import './_variables.scss';
+
+.glassmorphic-checkbox {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid $white-05;
+  border-radius: 5px;
+  background: $white-02;
+  cursor: pointer;
+
+  &:checked {
+    background: $purple-07;
+  }
+}
