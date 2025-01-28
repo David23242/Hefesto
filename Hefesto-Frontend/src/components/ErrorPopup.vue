@@ -71,7 +71,7 @@ body {
   text-align: center;
   font-size: 1rem;
   color: whitesmoke;
-  background-color: #fa709a;
+  background-color: #5c0277;
   padding: 0.8rem 1.8rem;
   border-radius: 2rem;
   cursor: pointer;

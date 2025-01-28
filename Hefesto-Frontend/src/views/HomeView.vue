@@ -1,84 +1,101 @@
 <template>
-   <div class="background">
-   <span></span>
-   <span></span>
-   <span></span>
-   <span></span>
-   <span></span>
-   <span></span>
-   <span></span>
-   <span></span>
-   <span></span>
-   <span></span>
-   <span></span>
-   <span></span>
-   <span></span>
-   <span></span>
-   <span></span>
-   <span></span>
-   <span></span>
-   <span></span>
-   <span></span>
-   <span></span>
-   <span></span>
-</div>
+  <!-- Fondo animado con múltiples elementos span -->
+  <div class="background">
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+  <!-- Contenedor principal del dashboard -->
   <div class="dashboard min-vh-100">
     <!-- Sidebar -->
     <div :class="['sidebar p-0 d-flex flex-column', { 'collapsed': isSidebarCollapsed }]">
+      <!-- Logo del dashboard -->
       <div class="logo mb-5 p-4">
         <img src="../assets/images/icons/logos.png" alt="Logo" class="img-fluid mb-4" style="max-width: 150px;">
       </div>
 
+      <!-- Navegación del sidebar -->
       <nav class="nav flex-column">
-        <a v-for="item in filteredMenuItems"
-           :key="item.name"
-           href="#"
-           :class="['nav-link d-flex align-items-center', { active: activeItem === item.name }]"
-           @click.prevent="setActiveItem(item.name)">
-          <img :src="item.icon" class="me-3" alt="" aria-hidden="true">
-          <span >{{ item.name }}</span>  <!-- Elimina :class="{ 'd-none': isSidebarCollapsed }" -->
+        <!-- Iteración sobre los elementos del menú filtrados por rol -->
+        <a
+          v-for="item in filteredMenuItems"
+          :key="item.name"
+          href="#"
+          :class="['nav-link d-flex align-items-center', { active: activeItem === item.name }]"
+          @click.prevent="setActiveItem(item.name)"
+        >
+          <img :src="item.icon" class="me-3" alt="" aria-hidden="true" />
+          <span>{{ item.name }}</span>
         </a>
       </nav>
 
+      <!-- Botón para cerrar sesión -->
       <button @click="logout" class="nav-link mt-auto d-flex align-items-center">
-        <img src="../assets/images/icons/cerrar.svg" class="me-3" alt="" aria-hidden="true">
-         <span >Cerrar sesión</span> <!-- Elimina :class="{ 'd-none': isSidebarCollapsed }" -->
+        <img src="../assets/images/icons/cerrar.svg" class="me-3" alt="" aria-hidden="true" />
+        <span>Cerrar sesión</span>
       </button>
     </div>
 
-    <!-- Main Content -->
+    <!-- Contenido principal -->
     <div class="main-content d-flex flex-column">
-      <!-- Header -->
+      <!-- Header del dashboard -->
       <header class="header px-4 py-3 d-flex justify-content-between align-items-center">
+        <!-- Botón para colapsar el sidebar en dispositivos móviles -->
         <button @click="toggleSidebar" class="btn btn-link d-md-none text-white">
           <i class="bi bi-list fs-4"></i>
         </button>
         <h1 class="h4 mb-0"></h1>
+        <!-- Información del usuario -->
         <div class="d-flex align-items-center gap-3">
           <div class="text-end">
             <span class="user-name">{{ userName }} {{ userLastName }}</span>
             <span class="user-role">{{ userRole }}</span>
           </div>
+          <!-- Avatar del usuario -->
           <div class="user-avatar">
-            <img :src="userImagePath" alt="User avatar" class="rounded-circle" v-if="userImagePath">
-            <div v-else class="rounded-circle bg-secondary d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
+            <img :src="userImagePath" alt="User avatar" class="rounded-circle" v-if="userImagePath" />
+            <div
+              v-else
+              class="rounded-circle bg-secondary d-flex justify-content-center align-items-center"
+              style="width: 40px; height: 40px;"
+            >
               <i class="bi bi-person-circle text-white" style="font-size: 1.5rem;"></i>
             </div>
           </div>
         </div>
       </header>
 
-      <!-- Content Area -->
+      <!-- Área de contenido dinámico -->
       <div class="content flex-grow-1 d-flex flex-column">
         <div class="content-panel p-4 d-flex flex-column">
-          <component :is="componenteActual" />
+          <!-- Componente dinámico basado en el ítem activo -->
+          <component :is="componenteActual" v-if="componenteActual" />
         </div>
       </div>
     </div>
 
-    <!-- Overlay for mobile -->
-    <div 
-      class="sidebar-overlay d-md-none" 
+    <!-- Overlay para móviles -->
+    <div
+      class="sidebar-overlay d-md-none"
       :class="{ 'active': isSidebarCollapsed }"
       @click="toggleSidebar"
     ></div>
@@ -86,36 +103,43 @@
 </template>
 
 <script setup>
-import { ref, defineAsyncComponent, onMounted, computed } from 'vue'
+import { ref, shallowRef, defineAsyncComponent, onMounted, computed, watch } from 'vue'; // Import shallowRef
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 
-
+// Uso del router de Vue
 const router = useRouter();
+
+// Referencias reactivas para los datos del usuario
 const userRole = ref(null);
 const userName = ref(null);
 const userLastName = ref(null);
 const userPicture = ref(null);
 const isLoggingOut = ref(false);
 const activeItem = ref('Panel');
+const componenteActual = shallowRef(null); // Use shallowRef here
+
+// URLs de la API
 const API_AUTH_URL = import.meta.env.VITE_API_AUTH_URL;
 const ME_URL = `${API_AUTH_URL}/auth/me`;
 const LOGOUT_URL = `${API_AUTH_URL}/auth/logout`;
 const IMAGE_URL = import.meta.env.VITE_IMAGE_URL;
 
+// Componentes asíncronos para el contenido dinámico
 const Panel = defineAsyncComponent(() => import('../components/Panel.vue'));
 const Incidencias = defineAsyncComponent(() => import('../components/Incidencias.vue'));
 const Mantenimiento = defineAsyncComponent(() => import('../components/Mantenimiento.vue'));
 const Ajustes = defineAsyncComponent(() => import('../components/Ajustes.vue'));
 const Administracion = defineAsyncComponent(() => import('../components/Administracion.vue'));
 
-
+// Elementos base del menú
 const baseMenuItems = [
   { name: 'Incidencias', icon: '../src/assets/images/icons/tickets.svg', to: '/incidencias' },
   { name: 'Mantenimiento', icon: '../src/assets/images/icons/mantenimiento.svg', to: '/mantenimiento' },
-  { name: 'Ajustes', icon: '../src/assets/images/icons/ajustes.svg', to: '/ajustes' }
+  { name: 'Ajustes', icon: '../src/assets/images/icons/ajustes.svg', to: '/ajustes' },
 ];
 
+// Elementos del menú filtrados por rol
 const allMenuItems = {
   administrador: [
     { name: 'Panel', icon: '../src/assets/images/icons/panel.svg', to: '/dashboard' },
@@ -125,47 +149,58 @@ const allMenuItems = {
   operario: [
     { name: 'Panel', icon: '../src/assets/images/icons/panel.svg', to: '/dashboard' },
     { name: 'Incidencias', icon: '../src/assets/images/icons/tickets.svg', to: '/incidencias' },
-    { name: 'Ajustes', icon: '../src/assets/images/icons/ajustes.svg', to: '/ajustes' }
+    { name: 'Ajustes', icon: '../src/assets/images/icons/ajustes.svg', to: '/ajustes' },
   ],
   tecnico: [
     { name: 'Panel', icon: '../src/assets/images/icons/panel.svg', to: '/dashboard' },
     { name: 'Incidencias', icon: '../src/assets/images/icons/tickets.svg', to: '/incidencias' },
     { name: 'Mantenimiento', icon: '../src/assets/images/icons/mantenimiento.svg', to: '/mantenimiento' },
-    { name: 'Ajustes', icon: '../src/assets/images/icons/ajustes.svg', to: '/ajustes' }
+    { name: 'Ajustes', icon: '../src/assets/images/icons/ajustes.svg', to: '/ajustes' },
   ],
 };
 
+// Computed property para filtrar los ítems del menú según el rol del usuario
 const filteredMenuItems = computed(() => {
   return allMenuItems[userRole.value] || [];
 });
 
-const componenteActual = computed(() => {
-  switch (activeItem.value) {
+// Watch activeItem and update componenteActual
+watch(activeItem, (newItem) => {
+  switch (newItem) {
     case 'Panel':
-      return Panel;
+      componenteActual.value = Panel;
+      break;
     case 'Incidencias':
-      return Incidencias;
+      componenteActual.value = Incidencias;
+      break;
     case 'Mantenimiento':
-      return Mantenimiento;
+      componenteActual.value = Mantenimiento;
+      break;
     case 'Ajustes':
-      return Ajustes;
+      componenteActual.value = Ajustes;
+      break;
     case 'Administracion':
-      return Administracion;
+      componenteActual.value = Administracion;
+      break;
     default:
-      return Panel; // Default to Panel component if none of the above match
+      componenteActual.value = Panel; // Default to Panel
+      break;
   }
 });
 
+
+// Función para establecer el ítem activo
 const setActiveItem = (itemName) => {
   activeItem.value = itemName;
   console.log('Active item:', itemName);
 };
 
-// Computed property to construct the image path
+// Computed property para construir la ruta de la imagen del usuario
 const userImagePath = computed(() => {
   return userPicture.value ? `${IMAGE_URL}${userPicture.value}` : null;
 });
 
+// Hook de ciclo de vida: cuando el componente es montado
 onMounted(async () => {
   const token = localStorage.getItem('token');
   if (token) {
@@ -179,6 +214,11 @@ onMounted(async () => {
       userName.value = response.data.name;
       userLastName.value = response.data.primer_apellido;
       userPicture.value = response.data.foto_perfil;
+
+      // Set initial component after user role is loaded, default to 'Panel'
+      activeItem.value = 'Panel'; // Or determine based on route, etc.
+      componenteActual.value = Panel; // Load Panel initially
+
     } catch (error) {
       console.error('Error fetching user data:', error);
       router.push('/');
@@ -188,6 +228,7 @@ onMounted(async () => {
   }
 });
 
+// Función para cerrar sesión
 const logout = async () => {
   isLoggingOut.value = true;
   const token = localStorage.getItem('token');
@@ -214,8 +255,10 @@ const logout = async () => {
   }
 };
 
+// Referencia reactiva para el estado colapsado del sidebar
 const isSidebarCollapsed = ref(false);
 
+// Función para alternar el estado colapsado del sidebar
 const toggleSidebar = () => {
   isSidebarCollapsed.value = !isSidebarCollapsed.value;
 };
@@ -241,7 +284,7 @@ $white-09: rgba(255, 255, 255, 0.9);
   }
 }
 
-/* Glassmorphic Sidebar */
+/* Estilos del sidebar con efecto glassmorphism */
 .sidebar {
   background: $white-05;
   backdrop-filter: blur(10px);
@@ -288,7 +331,8 @@ $white-09: rgba(255, 255, 255, 0.9);
   font-size: 0.95rem;
   text-decoration: none;
 
-  &:hover, &.active {
+  &:hover,
+  &.active {
     background: $white-01;
     color: white;
   }
@@ -301,18 +345,18 @@ $white-09: rgba(255, 255, 255, 0.9);
   }
 }
 
-/* Header */
+/* Estilos del header */
 .header {
   background: $white-05;
   backdrop-filter: blur(10px);
   color: white;
 }
 
-/* Main Content */
+/* Estilos del contenido principal */
 .main-content {
   min-height: 100vh;
   width: 100%;
-  
+
   @media (max-width: 767px) {
     margin-left: 0;
     width: 100vw;
@@ -320,7 +364,7 @@ $white-09: rgba(255, 255, 255, 0.9);
   }
 }
 
-/* Content Panel */
+/* Estilos del panel de contenido */
 .content-panel {
   background: $white-03;
   backdrop-filter: blur(10px);
@@ -328,7 +372,7 @@ $white-09: rgba(255, 255, 255, 0.9);
   flex-grow: 1;
 }
 
-/* Mobile Overlay */
+/* Estilos del overlay para móviles */
 .sidebar-overlay {
   position: fixed;
   top: 0;

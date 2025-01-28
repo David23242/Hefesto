@@ -1,14 +1,9 @@
 <template>
   <div class="row g-4 mb-4">
-    <!-- Header con los paneles -->
-    <div class="col-sm-6 col-md-3">
-      <div
-        class="card glassmorphic-card colored-shadow-pending create-incidencia-card"
-        @click="openCreateIncidenciaPopup"
-      >
-        <div
-          class="card-bodytotal card-body-same-height d-flex justify-content-between align-items-center"
-        >
+    <!-- Cabecera con paneles de resumen -->
+    <div class="col-sm-6 col-md-3" @click="openCreateIncidenciaPopup">
+      <div class="card glassmorphic-card colored-shadow-pending create-incidencia-card">
+        <div class="card-bodytotal card-body-same-height d-flex justify-content-between align-items-center">
           <h6 class="mb-0">Crear incidencia</h6>
           <img src="../assets/images/icons/crear.svg" />
         </div>
@@ -47,366 +42,403 @@
         </div>
       </div>
     </div>
-    <div class="col-12">
-      <div class="incidencia-list glassmorphic-card">
-        <div class="incidencia-list-header">
-          <div>Incidencias</div>
-          
 
-          <div class="priority-legend">
-            <div class="boton-filtro" @click="openFiltroPopup">
-              <img src="../assets/images/icons/filtro.svg" alt="Filtro" class="imagen-filtro">
-              Filtros
-            </div>
-          </div>
-
-        <div class="priority-legend">
-          <span
-            @click="seleccionarPrioridad('alta')"
-            :class="{ 'selected': prioridadSeleccionada === 'alta' }"
-            class="priority-filter"
-          >
-            <span class="priority-dot alta"></span> Alta
-          </span>
-          <span
-            @click="seleccionarPrioridad('media')"
-            :class="{ 'selected': prioridadSeleccionada === 'media' }"
-            class="priority-filter"
-          >
-            <span class="priority-dot media"></span> Media
-          </span>
-          <span
-            @click="seleccionarPrioridad('baja')"
-            :class="{ 'selected': prioridadSeleccionada === 'baja' }"
-            class="priority-filter"
-          >
-            <span class="priority-dot baja"></span> Baja
-          </span>
-          <span
-            @click="seleccionarPrioridad(null)"
-            :class="{ 'selected': prioridadSeleccionada === null }"
-            class="priority-filter"
-          >
-            Todos
-          </span>
+<!-- Listado de incidencias -->
+<div class="col-12">
+  <div class="incidencia-list glassmorphic-card">
+    <div class="incidencia-list-header">
+      <div>Incidencias</div>
+      <div class="priority-legend">
+        <!-- Botón y leyenda de filtro -->
+        <div class="boton-filtro" @click="openFiltroPopup">
+          <img src="../assets/images/icons/filtro.svg" alt="Filtro" class="imagen-filtro">
+          Filtros
         </div>
-      </div>
-      <div v-if="loading">Cargando incidencias...</div>
-      <div v-else-if="error">Error al cargar las incidencias.</div>
-      <div v-else class="incidencias-container">
-        <div
-          v-for="incidencia in filteredIncidencia"
-          :key="incidencia.date + incidencia.time"
-          class="incidencia-item"
-          @click="handleIncidenciaClick(incidencia)"
+        <!-- Filtros de prioridad -->
+        <span
+          @click="seleccionarPrioridad('alta')"
+          :class="{ 'selected': prioridadSeleccionada === 'alta' }"
+          class="priority-filter"
         >
-          <!-- Restructured layout to match the image -->
-          <div class="priority-marker" :class="incidencia.priority"></div>
-          <div class="incidencia-content">
-            <div class="incidencia-date">
-              <span>{{ incidencia.date }}</span>
-              <span>{{ incidencia.time }}</span>
-            </div>
-            <div class="incidencia-text">
-              <div>{{ incidencia.titulo }}</div>
-              <small class="text-muted">{{ incidencia.subtitulo }}</small>
-            </div>
-            <div class="incidencia-status-box">
-              <span
-                class="incidencia-status"
-                :class="incidencia.status.toLowerCase().replace(' ', '-')"
-              >
-                {{ incidencia.status }}
-              </span>
-              </div>
-            </div>
+          <span class="priority-dot alta"></span> Alta
+        </span>
+        <span
+          @click="seleccionarPrioridad('media')"
+          :class="{ 'selected': prioridadSeleccionada === 'media' }"
+          class="priority-filter"
+        >
+          <span class="priority-dot media"></span> Media
+        </span>
+        <span
+          @click="seleccionarPrioridad('baja')"
+          :class="{ 'selected': prioridadSeleccionada === 'baja' }"
+          class="priority-filter"
+        >
+          <span class="priority-dot baja"></span> Baja
+        </span>
+        <span
+          @click="seleccionarPrioridad(null)"
+          :class="{ 'selected': prioridadSeleccionada === null }"
+          class="priority-filter"
+        >
+          Todos
+        </span>
+      </div>
+    </div>
+
+    <!-- Mensajes de carga o error -->
+    <div v-if="loading" class="loading-container">
+      <div class="spinner-border text-dark" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <span>Cargando incidencias...</span>
+    </div>
+    <div v-else-if="error">Error al cargar las incidencias.</div>
+
+    <!-- Contenedor de incidencias -->
+    <div v-else class="incidencias-container">
+      <div
+        v-for="incidencia in filteredIncidenciaPrioridad"
+        :key="incidencia.id"
+        class="incidencia-item"
+        @click="handleIncidenciaClick(incidencia)"
+      >
+        <div class="priority-marker" :class="incidencia.priority"></div>
+        <div class="incidencia-content">
+          <div class="incidencia-date">
+            <span>{{ incidencia.date }}</span>
+            <span>{{ incidencia.time }}</span>
+          </div>
+          <div class="incidencia-text">
+            <div>{{ incidencia.titulo }}</div>
+            <small class="text-muted">{{ incidencia.subtitulo }}</small>
+          </div>
+          <div class="incidencia-status-box">
+            <span
+              class="incidencia-status"
+              :class="incidencia.status.toLowerCase().replace(' ', '-')"
+            >
+              {{ incidencia.status }}
+            </span>
           </div>
         </div>
       </div>
     </div>
-    <GlassmorphicPopup
-      :visible="showCreateIncidenciaPopup"
-      title="Crear Nueva Incidencia"
-      closeButtonText="Cancelar"
-      actionButtonText="Crear Incidencia"
-      @close="closeCreateIncidenciaPopup"
-      @action="handleCreateIncidencia"
-    >
-      <template #popup-content>
-        <div class="form-group mb-3">
-          <label for="titulo">Título:</label>
-          <CustomInput placeholder="Ingrese el título" v-model="newIncidencia.titulo" />
+  </div>
+</div>
+
+<!-- Popups -->
+<!-- Popup para crear incidencia -->
+<GlassmorphicPopup
+  :visible="showCreateIncidenciaPopup"
+  title="Crear Nueva Incidencia"
+  closeButtonText="Cancelar"
+  actionButtonText="Crear Incidencia"
+  @close="closeCreateIncidenciaPopup"
+  @action="handleCreateIncidencia"
+>
+  <template #popup-content>
+    <div class="form-group mb-3">
+      <label for="titulo">Título:</label>
+      <CustomInput placeholder="Ingrese el título" v-model="newIncidencia.titulo" />
+    </div>
+    <div class="form-group mb-3">
+      <label for="subtitulo">Subtítulo:</label>
+      <CustomInput
+        placeholder="Ingrese el subtítulo"
+        v-model="newIncidencia.subtitulo"
+      />
+    </div>
+    <div class="form-group mb-3">
+      <label for="tipoIncidencia">Tipo de Incidencia:</label>
+      <CustomSelect
+        :options="tiposIncidencia"
+        v-model="newIncidencia.id_tipo_incidencia"
+      />
+    </div>
+    <div class="form-group mb-3">
+      <label for="maquina">Máquina:</label>
+      <CustomSelect :options="maquinas" v-model="newIncidencia.id_maquina" />
+    </div>
+  </template>
+</GlassmorphicPopup>
+
+<!-- Popup para detalles de incidencia -->
+<GlassmorphicPopup
+  :visible="showIncidenciaDetailsPopup"
+  title="Detalles de la Incidencia"
+  closeButtonText="Cerrar"
+  @close="closeIncidenciaDetailsPopup"
+>
+  <template #popup-content>
+    <div v-if="selectedIncidencia">
+      <p><strong>Título:</strong> {{ selectedIncidencia.titulo }}</p>
+      <p><strong>Subtítulo:</strong> {{ selectedIncidencia.subtitulo }}</p>
+      <p><strong>Fecha:</strong> {{ selectedIncidencia.date }}</p>
+      <p><strong>Hora:</strong> {{ selectedIncidencia.time }}</p>
+      <p><strong>Estado:</strong> {{ selectedIncidencia.status }}</p>
+
+      <div v-if="!isOperario">
+        <label for="comment">Comentario:</label>
+        <textarea
+          id="comment"
+          v-model="commentText"
+          class="form-control custom-textarea"
+          rows="3"
+          placeholder="Agrega un comentario"
+          @input="handleCommentChange"
+        ></textarea>
+      </div>
+      <div v-else-if="selectedIncidencia.descripcion">
+        <p><strong>Comentario:</strong> {{ selectedIncidencia.descripcion }}</p>
+      </div>
+      <div v-else>
+        <p>No hay comentarios para mostrar</p>
+      </div>
+      <div class="action-buttons mt-auto"  v-if="!isOperario">
+        <button
+          v-if="(isTecnico || isAdmin) && !isUserActiveInIncidencia && selectedIncidencia.status !== 'Cerrada'"
+          class="popup-btn primary"
+          @click="handleReclamarIncidencia"
+          :disabled="reclamandoIncidencia"
+        >
+          {{ reclamandoIncidencia ? 'Reclamando...' : 'Reclamar Incidencia' }}
+        </button>
+        <div v-if="isUserActiveInIncidencia && selectedIncidencia.status === 'En curso'" class="d-flex justify-content-center gap-2">
+          <button class="popup-btn1 cancel-btn" @click="openMotivoSalidaPopup">Salir de Incidencia</button>
+          <button  v-if="isSoloTecnico" class="popup-btn primary" @click="openMotivoCierrePopup">Cerrar Incidencia</button>
         </div>
-        <div class="form-group mb-3">
-          <label for="subtitulo">Subtítulo:</label>
-          <CustomInput
-            placeholder="Ingrese el subtítulo"
-            v-model="newIncidencia.subtitulo"
-          />
-        </div>
-        <div class="form-group mb-3">
-          <label for="tipoIncidencia">Tipo de Incidencia:</label>
+      </div>
+    </div>
+    <div v-else>
+      <p>No hay detalles de incidencia para mostrar</p>
+    </div>
+  </template>
+</GlassmorphicPopup>
+
+<!-- Popup para motivo de cierre de incidencia -->
+<GlassmorphicPopup  v-if="!isOperario"
+  :visible="showMotivoCierrePopup"
+  title="Motivo de Cierre de Incidencia"
+  closeButtonText="Cancelar"
+  actionButtonText="Confirmar Cierre"
+  @close="closeMotivoCierrePopup"
+  @action="handleCerrarIncidencia"
+>
+  <template #popup-content>
+    <div class="form-group mb-3">
+      <label for="motivoCierre">Motivo:</label>
+      <textarea id="motivoCierre" v-model="motivoCierre" class="form-control custom-textarea" rows="3"
+        placeholder="Indique el motivo del cierre"></textarea>
+    </div>
+  </template>
+</GlassmorphicPopup>
+
+<!-- Popup de error genérico -->
+<GlassmorphicPopup
+  :visible="showErrorPopup"
+  title="Error"
+  closeButtonText="Cerrar"
+  @close="closeErrorPopup"
+>
+  <template #popup-content>
+    <p>{{ errorMessage }}</p>
+  </template>
+</GlassmorphicPopup>
+
+<!-- Popup para motivo de salida de incidencia -->
+<GlassmorphicPopup  v-if="!isOperario"
+  :visible="showMotivoSalidaPopup"
+  title="Motivo de Salida de Incidencia"
+  closeButtonText="Cancelar"
+  actionButtonText="Confirmar Salida"
+  @close="closeMotivoSalidaPopup"
+  @action="handleSalirIncidencia"
+>
+  <template #popup-content>
+    <div class="form-group mb-3">
+      <label for="motivoSalida">Motivo:</label>
+      <textarea id="motivoSalida" v-model="motivoSalida" class="form-control custom-textarea" rows="3"
+        placeholder="Indique el motivo de su salida"></textarea>
+    </div>
+  </template>
+</GlassmorphicPopup>
+
+<!-- Popup para filtros de incidencias -->
+<GlassmorphicPopup
+  :visible="showFiltroPopup"
+  title="Filtros incidencias"
+  closeButtonText="Cancelar"
+  actionButtonText="Aplicar"
+  @close="cancelFilters"
+  @action="applyFilters"
+>
+  <template #popup-content>
+    <div class="row">
+      <div class="col">
+        <div class="search-bar">
           <CustomSelect
-            :options="tiposIncidencia"
-            v-model="newIncidencia.id_tipo_incidencia"
+            :options="campusOptions"
+            v-model="selectedCampusTemp"
+            placeholder="Filtrar por campus"
+            class="glassmorphic-select"
+          />
+          <CustomSelect
+            :options="filteredSeccionOptions"
+            v-model="selectedSeccionTemp"
+            placeholder="Filtrar por seccion"
+            class="glassmorphic-select"
           />
         </div>
-        <div class="form-group mb-3">
-          <label for="maquina">Máquina:</label>
-          <CustomSelect :options="maquinas" v-model="newIncidencia.id_maquina" />
-        </div>
-      </template>
-    </GlassmorphicPopup>
-    <GlassmorphicPopup 
-      :visible="showIncidenciaDetailsPopup"
-      title="Detalles de la Incidencia"
-      closeButtonText="Cerrar"
-      @close="closeIncidenciaDetailsPopup"
-    >
-    <template #popup-content>
-        <div v-if="selectedIncidencia">
-          <p><strong>Título:</strong> {{ selectedIncidencia.titulo }}</p>
-          <p><strong>Subtítulo:</strong> {{ selectedIncidencia.subtitulo }}</p>
-          <p><strong>Fecha:</strong> {{ selectedIncidencia.date }}</p>
-          <p><strong>Hora:</strong> {{ selectedIncidencia.time }}</p>
-          <p><strong>Estado:</strong> {{ selectedIncidencia.status }}</p>
-
-          <div v-if="!isOperario">
-            <label for="comment">Comentario:</label>
-            <textarea
-              id="comment"
-              v-model="commentText"
-              class="form-control custom-textarea"
-              rows="3"
-              placeholder="Agrega un comentario"
-              @input="handleCommentChange"
-            ></textarea>
-          </div>
-          <div v-else-if="selectedIncidencia.descripcion">
-            <p><strong>Comentario:</strong> {{ selectedIncidencia.descripcion }}</p>
-          </div>
-          <div v-else>
-            <p>No hay comentarios para mostrar</p>
-          </div>
-            <div class="action-buttons mt-auto"  v-if="!isOperario">
-             <button
-               v-if="(isTecnico || isAdmin) && !isUserActiveInIncidencia && selectedIncidencia.status !== 'Cerrada'"
-                class="popup-btn primary"
-                @click="handleReclamarIncidencia"
-                :disabled="reclamandoIncidencia"
-              >
-                {{ reclamandoIncidencia ? 'Reclamando...' : 'Reclamar Incidencia' }}
-              </button>
-              <div v-if="isUserActiveInIncidencia && selectedIncidencia.status === 'En curso'" class="d-flex justify-content-center gap-2">
-                <button class="popup-btn1 cancel-btn" @click="openMotivoSalidaPopup">Salir de
-                  Incidencia
-                </button>
-                <button  v-if="isSoloTecnico" class="popup-btn primary" @click="openMotivoCierrePopup">Cerrar Incidencia
-                </button>
-              </div>
-            </div>
-        </div>
-        <div v-else>
-          <p>No hay detalles de incidencia para mostrar</p>
-        </div>
-      </template>
-    </GlassmorphicPopup>
-     <GlassmorphicPopup  v-if="!isOperario"
-      :visible="showMotivoCierrePopup"
-      title="Motivo de Cierre de Incidencia"
-      closeButtonText="Cancelar"
-      actionButtonText="Confirmar Cierre"
-      @close="closeMotivoCierrePopup"
-      @action="handleCerrarIncidencia"
-    >
-      <template #popup-content>
-        <div class="form-group mb-3">
-          <label for="motivoCierre">Motivo:</label>
-          <textarea id="motivoCierre" v-model="motivoCierre" class="form-control custom-textarea" rows="3"
-            placeholder="Indique el motivo del cierre"></textarea>
-        </div>
-      </template>
-    </GlassmorphicPopup>
-      <GlassmorphicPopup
-          :visible="showErrorPopup"
-          title="Error"
-          closeButtonText="Cerrar"
-          @close="closeErrorPopup"
-      >
-          <template #popup-content>
-              <p>{{ errorMessage }}</p>
-          </template>
-      </GlassmorphicPopup>
-    <GlassmorphicPopup  v-if="!isOperario"
-      :visible="showMotivoSalidaPopup"
-      title="Motivo de Salida de Incidencia"
-      closeButtonText="Cancelar"
-      actionButtonText="Confirmar Salida"
-      @close="closeMotivoSalidaPopup"
-      @action="handleSalirIncidencia"
-    >
-      <template #popup-content>
-        <div class="form-group mb-3">
-          <label for="motivoSalida">Motivo:</label>
-          <textarea id="motivoSalida" v-model="motivoSalida" class="form-control custom-textarea" rows="3"
-            placeholder="Indique el motivo de su salida"></textarea>
-        </div>
-      </template>
-    </GlassmorphicPopup>
-    <GlassmorphicPopup
-      :visible="showFiltroPopup"
-      title="Filtros incidencias"
-      closeButtonText="Cancelar"
-      actionButtonText="Aplicar"
-      @close="cancelFilters"
-      @action="closeFiltroPopup"
-      >
-      
-      <template #popup-content>
-        <div class="row">
-          <div class="col">
-
-            <div class="search-bar">
-              <CustomSelect
-                    :options="campusOptions"
-                    :modelValue="selectedCampus"
-                    @update:modelValue="handleFilterCampusSelect"
-                    placeholder="Filtrar por campus"
-                    class="glassmorphic-select"
-                  />
-                  <CustomSelect
-                    :options="filteredSeccionOptions"
-                    :modelValue="selectedSeccion"
-                    @update:modelValue="handleFilterSeccionSelect"
-                    placeholder="Filtrar por seccion"
-                    class="glassmorphic-select"
-                  />
-            </div>
-          </div>
-        </div>
-      </template>
-    </GlassmorphicPopup>
+      </div>
+    </div>
+  </template>
+</GlassmorphicPopup>
   </div>
 </template>
-
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue';
 import axios from 'axios';
 import GlassmorphicPopup from './GlassmorphicPopup.vue';
 import CustomSelect from './CustomSelect.vue';
 import CustomInput from './CustomInput.vue';
+import { useToast } from "vue-toastification";
 
-const loading = ref(true);
-const error = ref(null);
-const incidencias = ref([]);
-const incidenciasPanel = ref([]); 
-const tiposIncidencia = ref([]);
-const maquinas = ref([]);
-const tecnicoIncidencias = ref([]);
-const API_AUTH_URL = import.meta.env.VITE_API_AUTH_URL;
-const ALL_INCIDENCIAS_URL = `${API_AUTH_URL}/incidencia/all`;
-const ALL_INCIDENCIAS_URL_CERRADAS = `${API_AUTH_URL}/incidencia/all_cerradas`;
-const ALL_TIPO_INCIDENCIAS_URL = `${API_AUTH_URL}/tipo_incidencia/all`;
-const ALL_MAQUINAS_URL = `${API_AUTH_URL}/maquina/all`;
-const ALL_TECNICO_INCIDENCIA_URL = `${API_AUTH_URL}/tecnico_incidencia/all`;
-const ME_URL = `${API_AUTH_URL}/auth/me`;
-const CAMPUS_ALL_URL = `${API_AUTH_URL}/campus/all`;
-const SECCION_ALL_URL = `${API_AUTH_URL}/seccion/all`;
-const userPicture = ref(null);
-const userId = ref(null);
-const userRole = ref(null);
-const prioridadSeleccionada = ref(null); 
-const seleccionarPrioridad = (prioridad) => {
+// Estados reactivos
+const loading = ref(true); // Indica si se están cargando datos
+const error = ref(null); // Almacena errores de carga
+const incidencias = ref([]); // Listado completo de incidencias para dashboard
+const incidenciasPanel = ref([]); // Listado de incidencias para el panel principal
+const tiposIncidencia = ref([]); // Tipos de incidencia para el selector
+const maquinas = ref([]); // Máquinas para el selector
+const tecnicoIncidencias = ref([]); // Listado de técnicos y sus incidencias activas
+const API_AUTH_URL = import.meta.env.VITE_API_AUTH_URL; // URL base de la API
+const ALL_INCIDENCIAS_URL = `${API_AUTH_URL}/incidencia/all`; // URL para todas las incidencias
+const ALL_INCIDENCIAS_URL_CERRADAS = `${API_AUTH_URL}/incidencia/all_cerradas`; // URL para incidencias cerradas
+const ALL_TIPO_INCIDENCIAS_URL = `${API_AUTH_URL}/tipo_incidencia/all`; // URL para tipos de incidencia
+const ALL_MAQUINAS_URL = `${API_AUTH_URL}/maquina/all`; // URL para máquinas
+const ALL_TECNICO_INCIDENCIA_URL = `${API_AUTH_URL}/tecnico_incidencia/all`; // URL para técnicos de incidencia
+const ME_URL = `${API_AUTH_URL}/auth/me`; // URL para obtener datos del usuario actual
+const CAMPUS_ALL_URL = `${API_AUTH_URL}/campus/all`; // URL para obtener todos los campus
+const SECCION_ALL_URL = `${API_AUTH_URL}/seccion/all`; // URL para obtener todas las secciones
+const userPicture = ref(null); // Foto del usuario
+const userId = ref(null); // ID del usuario
+const userRole = ref(null); // Rol del usuario
+const prioridadSeleccionada = ref(null); // Prioridad seleccionada para filtrar
+const seleccionarPrioridad = (prioridad) => { // Función para seleccionar la prioridad de filtrado
   prioridadSeleccionada.value = prioridad;
 };
-console.log('userId from localStorage:', userId);
-const isTecnico = computed(() => userRole.value === 'tecnico');
-const isAdmin = computed(() => userRole.value === 'administrador');
-const isOperario = computed(() => userRole.value === 'operario');
-const userImagePath = computed(() => {
+const isTecnico = computed(() => userRole.value === 'tecnico'); // Computed para verificar si el usuario es técnico
+const isAdmin = computed(() => userRole.value === 'administrador'); // Computed para verificar si el usuario es administrador
+const isOperario = computed(() => userRole.value === 'operario'); // Computed para verificar si el usuario es operario
+const userImagePath = computed(() => { // Computed para la ruta de la imagen del usuario (no se usa en el template proporcionado)
     return userPicture ? `${IMAGE_URL}${userPicture}` : null;
 });
-const showMotivoSalidaPopup = ref(false);
-const motivoSalida = ref('');
-const showCreateIncidenciaPopup = ref(false);
-const showFiltroPopup = ref(false);
-const guardandoComentario = ref(false);
-const newIncidencia = ref({
+const showMotivoSalidaPopup = ref(false); // Controla la visibilidad del popup de motivo de salida
+const motivoSalida = ref(''); // Motivo de salida de incidencia
+const showCreateIncidenciaPopup = ref(false); // Controla la visibilidad del popup de crear incidencia
+const showFiltroPopup = ref(false); // Controla la visibilidad del popup de filtros
+const guardandoComentario = ref(false); // Indica si se está guardando un comentario
+const newIncidencia = ref({ // Objeto para almacenar los datos de la nueva incidencia
     titulo: '',
     subtitulo: '',
     id_tipo_incidencia: null,
     id_maquina: null,
 });
-const reclamandoIncidencia = ref(false);
-const showMotivoCierrePopup = ref(false);
-const motivoCierre = ref('');
-const debouncedUpdateDescription = ref(null);
-const hasReclamada = ref(false);
-const showErrorPopup = ref(false);
-const errorMessage = ref('');
-const isSoloTecnico = computed(()=>{
+const reclamandoIncidencia = ref(false); // Indica si se está reclamando una incidencia
+const showMotivoCierrePopup = ref(false); // Controla la visibilidad del popup de motivo de cierre
+const motivoCierre = ref(''); // Motivo de cierre de incidencia
+const debouncedUpdateDescription = ref(null); // Referencia para limpiar el debounce del comentario
+const hasReclamada = ref(false); // Indica si el técnico ya tiene una incidencia reclamada activa
+const showErrorPopup = ref(false); // Controla la visibilidad del popup de error
+const errorMessage = ref(''); // Mensaje de error para el popup
+const isSoloTecnico = computed(()=>{ // Computed para verificar si es el único técnico activo en la incidencia
     if(selectedIncidencia.value && (isTecnico.value || isAdmin.value)){
     const count = tecnicoIncidencias.value.filter(incidencia => incidencia.id_incidencia === selectedIncidencia.value.id && incidencia.estado_tecnico === 'activo').length;
-     console.log('isSoloTecnico:', count === 1, 'count:', count);
     return count === 1;
     }
     return false
 })
 
-const obtenerPrioridad = (prioridad) => {
-    if (prioridad === "alta" || prioridad ==="media" || prioridad === "baja") {
+// Toast instance
+const toast = useToast();
+
+// Default toast options (can be reused and customized)
+const defaultToastOptions = {
+  position: "top-right",
+  timeout: 5000,
+  closeOnClick: true,
+  pauseOnFocusLoss: true,
+  pauseOnHover: true,
+  draggable: true,
+  draggablePercent: 0.6,
+  showCloseButtonOnHover: false,
+  hideProgressBar: true,
+  closeButton: "button",
+  icon: true,
+  rtl: false,
+  toastClassName: 'glassmorphic-toast',
+  bodyClassName: 'glassmorphic-toast-body',
+  style: {
+    background: "transparent",
+  },
+};
+
+// Helper functions to create toasts with default options
+const showSuccessToast = (message, options = {}) => {
+  toast.success(message, { ...defaultToastOptions, ...options });
+};
+
+const showErrorToast = (message, options = {}) => {
+  toast.error(message, { ...defaultToastOptions, ...options });
+};
+
+const showWarningToast = (message, options = {}) => {
+  toast.warning(message, { ...defaultToastOptions, ...options });
+};
+
+const showInfoToast = (message, options = {}) => {
+  toast.info(message, { ...defaultToastOptions, ...options });
+};
+
+
+// Funciones de formateo y utilidad
+const obtenerPrioridad = (prioridad) => { // Función para obtener la prioridad en formato legible
+    if (["alta", "media", "baja"].includes(prioridad)) {
         return prioridad;
     } else {
         return "baja";
     }
 };
 
-
-const obtenerEstado = (estado) => {
+const obtenerEstado = (estado) => { // Función para obtener el estado en formato legible
     switch (estado) {
-        case 0:
-            return 'Nueva';
-        case 1:
-            return 'Pendiente';
-        case 2:
-            return 'En curso';
-        case 3:
-            return 'Cerrada';
-        case 4:
-            return 'Mantenimiento';
-        default:
-            return '';
+        case 0: return 'Nueva';
+        case 1: return 'Pendiente';
+        case 2: return 'En curso';
+        case 3: return 'Cerrada';
+        case 4: return 'Mantenimiento';
+        default: return '';
     }
 };
 
-const formatDate = (dateString) => {
+const formatDate = (dateString) => { // Función para formatear la fecha
     const date = new Date(dateString);
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return date.toLocaleDateString(undefined, options);
 };
 
-const formatTime = (dateString) => {
+const formatTime = (dateString) => { // Función para formatear la hora
     const date = new Date(dateString);
     const options = { hour: '2-digit', minute: '2-digit' };
     return date.toLocaleTimeString(undefined, options);
 };
 
-
-const fetchData = async (url) => {
+const fetchData = async (url) => { // Función genérica para obtener datos de la API
     const token = localStorage.getItem('token');
-    if (!token) {
-        throw new Error('No token found');
-    }
+    if (!token) throw new Error('No token found');
     try {
-        const response = await axios.post(
-            url,
-            {},
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            }
-        );
+        const response = await axios.post(url, {}, { headers: { Authorization: `Bearer ${token}` } });
         return response.data;
     } catch (err) {
         console.error('Error al obtener los datos de las incidencias:', err);
@@ -414,40 +446,25 @@ const fetchData = async (url) => {
     }
 };
 
-const fetchTecnicoIncidencias = async () => {
+const fetchTecnicoIncidencias = async () => { // Función para obtener los técnicos de las incidencias
     try {
-
       if(!isOperario.value){
         const token = localStorage.getItem('token');
-        if (!token) {
-          throw new Error('No token found');
-        }
-        const response = await axios.get(ALL_TECNICO_INCIDENCIA_URL, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        if (!token) throw new Error('No token found');
+        const response = await axios.get(ALL_TECNICO_INCIDENCIA_URL, { headers: { Authorization: `Bearer ${token}` } });
           tecnicoIncidencias.value = response.data.data;
-          console.log('tecnicoIncidencias:', tecnicoIncidencias.value);
       }
-      
     } catch (error) {
       console.error('Error al obtener los técnicos de las incidencias:', error);
       throw new Error('Error al obtener los técnicos de las incidencias');
     }
   };
 
-const fetchTipoIncidencias = async () => {
+const fetchTipoIncidencias = async () => { // Función para obtener los tipos de incidencia
     try {
         const token = localStorage.getItem('token');
-        if (!token) {
-            throw new Error('No token found');
-        }
-        const response = await axios.get(ALL_TIPO_INCIDENCIAS_URL, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
+        if (!token) throw new Error('No token found');
+        const response = await axios.get(ALL_TIPO_INCIDENCIAS_URL, { headers: { Authorization: `Bearer ${token}` } });
         return response.data;
     } catch (error) {
         console.error('Error al obtener los tipos de incidencia:', error);
@@ -455,56 +472,28 @@ const fetchTipoIncidencias = async () => {
     }
 };
 
-const fetchMaquinas = async () => {
+const fetchMaquinas = async () => { // Función para obtener las máquinas
     try {
         const token = localStorage.getItem('token');
-        if (!token) {
-            throw new Error('No token found');
-        }
-        const response = await axios.post(ALL_MAQUINAS_URL, {}, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-
-        if (response.data && Array.isArray(response.data.data)) {
-            return response.data.data;
-        } else {
-            return [];
-        }
+        if (!token) throw new Error('No token found');
+        const response = await axios.post(ALL_MAQUINAS_URL, {}, { headers: { Authorization: `Bearer ${token}` } });
+        return response.data.data || [];
     } catch (error) {
         console.error('Error al obtener las maquinas:', error);
         throw new Error('Error al obtener las maquinas');
     }
 };
 
-const incidenciasPendientesCount = computed(() => {
-    return incidencias.value.filter(
-        (incidencia) => {
-            const estado = obtenerEstado(incidencia.estado);
-            return estado === 'Pendiente' || estado === 'Nueva';
-        }
-    ).length;
-});
+// Computed properties para contar incidencias por estado
+const incidenciasPendientesCount = computed(() => incidencias.value.filter((incidencia) => ['Pendiente', 'Nueva'].includes(obtenerEstado(incidencia.estado))).length);
+const incidenciasEnCursoCount = computed(() => incidencias.value.filter((incidencia) => obtenerEstado(incidencia.estado) === 'En curso').length);
+const incidenciasCerradasCount = computed(() => incidencias.value.filter((incidencia) => obtenerEstado(incidencia.estado) === 'Cerrada').length);
 
-const incidenciasEnCursoCount = computed(() => {
-    return incidencias.value.filter(
-        (incidencia) => obtenerEstado(incidencia.estado) === 'En curso'
-    ).length;
-});
-
-const incidenciasCerradasCount = computed(() => {
-    return incidencias.value.filter(
-        (incidencia) => obtenerEstado(incidencia.estado) === 'Cerrada'
-    ).length;
-});
-
-const loadIncidencias = async (url) => {
+const loadIncidencias = async (url) => { // Función para cargar incidencias desde una URL dada
     try {
         loading.value = true;
         const incidenciasData = await fetchData(url);
-
-        return incidenciasData.map((incidencia) => ({
+        return incidenciasData.map(incidencia => ({
             ...incidencia,
             id: incidencia.id,
             priority: obtenerPrioridad(incidencia.prioridad),
@@ -521,157 +510,132 @@ const loadIncidencias = async (url) => {
         loading.value = false;
     }
 }
-const isUserActiveInIncidencia = computed(() => {
+const isUserActiveInIncidencia = computed(() => { // Computed para verificar si el usuario es técnico activo en la incidencia seleccionada
     if (!selectedIncidencia.value || !userId.value) return false;
-    return tecnicoIncidencias.value.some(
-        (item) =>
+    return tecnicoIncidencias.value.some(item =>
         item.id_incidencia === selectedIncidencia.value.id &&
         item.id_tecnico === Number(userId.value) &&
         item.estado_tecnico === 'activo'
     );
 });
-const loadIncidenciasDashboard = async () => {
+
+const loadIncidenciasDashboard = async () => { // Función para cargar incidencias para el dashboard (cerradas)
     try {
         incidencias.value = await loadIncidencias(ALL_INCIDENCIAS_URL_CERRADAS)
     } catch (err){
         error.value = err;
     }
 };
-const loadIncidenciasPanel = async () => {
+
+const loadIncidenciasPanel = async () => { // Función para cargar incidencias para el panel principal (todas)
     try {
         incidenciasPanel.value = await loadIncidencias(ALL_INCIDENCIAS_URL)
     }catch(err){
         error.value = err;
     }
 };
-const fetchUserData = async () => {
+
+const fetchUserData = async () => { // Función para obtener datos del usuario
     const token = localStorage.getItem('token');
     if (token) {
         try {
-            const response = await axios.get(ME_URL, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-           userRole.value = response.data.rol;
+            const response = await axios.get(ME_URL, { headers: { Authorization: `Bearer ${token}` } });
+            userRole.value = response.data.rol;
             userPicture.value = response.data.picture;
             userId.value = response.data.id
-             localStorage.setItem('id', response.data.id);
-
-
+            localStorage.setItem('id', response.data.id);
         } catch (error) {
             console.error('Error fetching user data:', error);
         }
     }
 };
-const checkUserHasReclamada = () => {
+
+const checkUserHasReclamada = () => { // Función para verificar si el técnico tiene una incidencia reclamada activa
     if(isTecnico.value || isAdmin.value){
          hasReclamada.value = tecnicoIncidencias.value.some(incidencia => incidencia.id_tecnico === Number(userId.value) && incidencia.estado_tecnico === 'activo')
     }
 }
 
-const searchQuery = ref('');
-const selectedSeccion = ref(null);
-const seccionOptions = ref([]);
-const selectedCampus = ref(null);
-const campusOptions = ref([]);
+// Filtros y búsquedas
+const searchQuery = ref(''); // Texto de búsqueda
+const selectedSeccion = ref(null); // Sección seleccionada para filtrar
+const seccionOptions = ref([]); // Opciones de sección para el filtro
+const selectedCampus = ref(null); // Campus seleccionado para filtrar
+const campusOptions = ref([]); // Opciones de campus para el filtro
 
-const filteredIncidencia = computed(() => {
-  if (!incidenciasPanel.value) {
-    return [];
-  }
+const filteredIncidencia = computed(() => { // Computed para filtrar incidencias por búsqueda, sección y campus
+  if (!incidenciasPanel.value) return [];
   let filtered = [...incidenciasPanel.value];
   if (searchQuery.value) {
     const searchTerm = searchQuery.value.toLowerCase();
+    filtered = filtered.filter(incidencia => `${incidencia.titulo}`.toLowerCase().includes(searchTerm));
+  }
+  if (selectedSeccion.value) {
     filtered = filtered.filter(incidencia => {
-      const incidenciaName = `${incidencia.titulo}`.toLowerCase();
-      return incidenciaName.includes(searchTerm);
+      const maquina = maquinas.value.find(maquina => maquina.id === incidencia.id_maquina);
+      return maquina?.id_seccion === selectedSeccion.value;
     });
   }
-
-    if (selectedSeccion.value) {
-        filtered = filtered.filter(incidencia => {
-        const maquina = maquinas.value.find(maquina => maquina.id === incidencia.id_maquina);
-        return maquina?.id_seccion === selectedSeccion.value;
+  if (selectedCampus.value) {
+    filtered = filtered.filter(incidencia => {
+      const maquina = maquinas.value.find(maquina => maquina.id === incidencia.id_maquina);
+      const seccion = seccionOptions.value.find(seccion => seccion.id === maquina?.id_seccion);
+      return seccion?.id_campus === selectedCampus.value;
     });
-    }
-
-    if (selectedCampus.value) {
-        filtered = filtered.filter(incidencia => {
-             const maquina = maquinas.value.find(maquina => maquina.id === incidencia.id_maquina);
-            const seccion = seccionOptions.value.find(seccion => seccion.id === maquina?.id_seccion);
-          return seccion?.id_campus === selectedCampus.value;
-        });
-      }
-
+  }
   return filtered;
 });
 
-const filteredSeccionOptions = computed(() => {
-  if (selectedCampus.value) {
-    return seccionOptions.value.filter(seccion => seccion.id_campus === selectedCampus.value);
-  }
-  return seccionOptions.value;
+const filteredIncidenciaPrioridad = computed(() => { // Computed para filtrar incidencias por prioridad
+    let filtered = filteredIncidencia.value;
+    if (prioridadSeleccionada.value) {
+        filtered = filtered.filter(incidencia => incidencia.priority === prioridadSeleccionada.value);
+    }
+    return filtered;
 });
 
-const handleFilterSeccionSelect = (seccionId) =>{
-  selectedSeccion.value = seccionId;
-}
+const filteredSeccionOptions = computed(() => { // Computed para filtrar opciones de sección por campus seleccionado
+  return selectedCampus.value ? seccionOptions.value.filter(seccion => seccion.id_campus === selectedCampus.value) : seccionOptions.value;
+});
 
-const handleFilterCampusSelect = (campusId) =>{
-  selectedCampus.value = campusId;
-  selectedSeccion.value = null;
-}
-
+// Variables temporales para filtros antes de aplicar
 const searchQueryTemp = ref('');
 const selectedSeccionTemp = ref(null);
 const selectedCampusTemp = ref(null);
 
-const cancelFilters = () => {
+const cancelFilters = () => { // Función para cancelar filtros y cerrar el popup
     searchQueryTemp.value = "";
     selectedSeccionTemp.value = null;
     selectedCampusTemp.value = null;
-    searchQuery.value = "";
-    selectedSeccion.value = null;
-    selectedCampus.value = null;
     closeFiltroPopup();
 };
 
-onMounted(async () => {
+const applyFilters = () => { // Función para aplicar filtros y cerrar el popup
+    searchQuery.value = searchQueryTemp.value;
+    selectedSeccion.value = selectedSeccionTemp.value;
+    selectedCampus.value = selectedCampusTemp.value;
+    closeFiltroPopup();
+};
+
+// Ciclo de vida y watchers
+onMounted(async () => { // Hook onMounted para cargar datos al montar el componente
     try {
       const token = localStorage.getItem('token');
-      const headers = {
-        Authorization: `Bearer ${token}`,
-      };
+      const headers = { Authorization: `Bearer ${token}` };
         await fetchUserData()
         const [tiposData, maquinasData] = await Promise.all([
             fetchTipoIncidencias(),
             fetchMaquinas(),
         ]);
 
-        tiposIncidencia.value = tiposData.map((tipo) => ({
-            id: tipo.id,
-            label: tipo.tipo,
-        }));
-
-        maquinas.value = maquinasData.map((maquina) => ({
-            id: maquina.id,
-            label: maquina.nombre_maquina,
-            id_seccion: maquina.id_seccion
-        }));
+        tiposIncidencia.value = tiposData.map(tipo => ({ id: tipo.id, label: tipo.tipo }));
+        maquinas.value = maquinasData.map(maquina => ({ id: maquina.id, label: maquina.nombre_maquina, id_seccion: maquina.id_seccion }));
 
         const response = await axios.get(SECCION_ALL_URL, { headers });
-          seccionOptions.value = response.data.data.map((seccion) => ({
-            id: seccion.id,
-            label: seccion.nombre_seccion,
-            id_campus: seccion.id_campus,
-        }));
+          seccionOptions.value = response.data.data.map(seccion => ({ id: seccion.id, label: seccion.nombre_seccion, id_campus: seccion.id_campus }));
 
         const campusResponse = await axios.get(CAMPUS_ALL_URL, { headers });
-        campusOptions.value = campusResponse.data.data.map((campus) => ({
-          id: campus.id,
-          label: campus.nombre_campus,
-        }));
+        campusOptions.value = campusResponse.data.data.map(campus => ({ id: campus.id, label: campus.nombre_campus }));
 
         await Promise.all([
             loadIncidenciasDashboard(),
@@ -684,32 +648,23 @@ onMounted(async () => {
         loading.value = false;
     }
 });
-watch(incidencias,()=>{
-    checkUserHasReclamada();
-});
 
-const openCreateIncidenciaPopup = () => {
-    showCreateIncidenciaPopup.value = true;
-};
+watch(incidencias, checkUserHasReclamada); // Watcher para verificar incidencias reclamadas al cambiar la lista de incidencias
 
+// Funciones para controlar popups
+const openCreateIncidenciaPopup = () => { showCreateIncidenciaPopup.value = true; };
 const openFiltroPopup = () => {
   showFiltroPopup.value = true;
+  selectedCampusTemp.value = selectedCampus.value;
+  selectedSeccionTemp.value = selectedSeccion.value;
 }
-
-const closeFiltroPopup = () => {
-  showFiltroPopup.value = false;
-}
-
+const closeFiltroPopup = () => { showFiltroPopup.value = false; };
 const closeCreateIncidenciaPopup = () => {
     showCreateIncidenciaPopup.value = false;
-    newIncidencia.value = {
-        titulo: '',
-        subtitulo: '',
-        id_tipo_incidencia: null,
-        id_maquina: null,
-    };
+    newIncidencia.value = { titulo: '', subtitulo: '', id_tipo_incidencia: null, id_maquina: null };
 };
-const validateIncidenciaData = () => {
+
+const validateIncidenciaData = () => { // Función para validar datos antes de crear incidencia
     if (!newIncidencia.value.titulo || !newIncidencia.value.subtitulo || !newIncidencia.value.id_tipo_incidencia || !newIncidencia.value.id_maquina) {
         alert('Por favor, complete el título, el subtítulo, el tipo de incidencia y la máquina.');
         return false;
@@ -717,19 +672,13 @@ const validateIncidenciaData = () => {
     return true;
 };
 
-const handleCreateIncidencia = async () => {
-    if (!validateIncidenciaData()) {
-        return;
-    }
+
+const handleCreateIncidencia = async () => { // Función para crear una nueva incidencia
+    if (!validateIncidenciaData()) return;
     const token = localStorage.getItem('token');
-    if (!token) {
-        throw new Error('No token found');
-    }
+    if (!token) throw new Error('No token found');
     try {
         const apiUrl = `${API_AUTH_URL}/incidencia/store`;
-        const fecha_apertura = new Date();
-        const formattedDate = fecha_apertura.toISOString().slice(0, 19).replace('T', ' ');
-
         const requestData = {
             titulo: newIncidencia.value.titulo,
             subtitulo: newIncidencia.value.subtitulo,
@@ -737,117 +686,81 @@ const handleCreateIncidencia = async () => {
             id_maquina: Number(newIncidencia.value.id_maquina),
             tipo_incidencia: Number(newIncidencia.value.id_tipo_incidencia),
         };
-
-        const response = await axios.post(apiUrl, requestData, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
+        const response = await axios.post(apiUrl, requestData, { headers: { Authorization: `Bearer ${token}` } });
 
         if (response.status === 201) {
             closeCreateIncidenciaPopup();
-             await Promise.all([
-            loadIncidenciasDashboard(),
-            loadIncidenciasPanel()
-        ]);
+            await Promise.all([ loadIncidenciasDashboard(), loadIncidenciasPanel() ]);
+            showSuccessToast("Incidencia creada con éxito!"); // Show toast on successful creation
         }
     } catch (error) {
         console.error('Error al crear la incidencia:', error);
+        showErrorToast("Error al crear la incidencia.");
     }
 };
 
-const showIncidenciaDetailsPopup = ref(false);
-const selectedIncidencia = ref(null);
-const commentText = ref('');
+const showIncidenciaDetailsPopup = ref(false); // Controla la visibilidad del popup de detalles de incidencia
+const selectedIncidencia = ref(null); // Incidencia seleccionada para mostrar detalles
+const commentText = ref(''); // Texto del comentario
 
-const handleIncidenciaClick = (incidencia) => {
+const handleIncidenciaClick = (incidencia) => { // Función para manejar el click en una incidencia y mostrar el popup de detalles
     selectedIncidencia.value = incidencia;
     commentText.value = incidencia.descripcion || '';
     showIncidenciaDetailsPopup.value = true;
 };
 
-const closeIncidenciaDetailsPopup = () => {
+const closeIncidenciaDetailsPopup = () => { // Función para cerrar el popup de detalles de incidencia
     showIncidenciaDetailsPopup.value = false;
     selectedIncidencia.value = null;
     commentText.value = '';
     motivoSalida.value = '';
     motivoCierre.value = '';
 };
-const handleCommentChange = () => {
-    if (debouncedUpdateDescription.value) {
-        clearTimeout(debouncedUpdateDescription.value);
-    }
 
-    debouncedUpdateDescription.value = setTimeout(async () => {
-        await handleUpdateDescription();
-    }, 1000);
+const handleCommentChange = () => { // Función para manejar cambios en el comentario con debounce
+    if (debouncedUpdateDescription.value) clearTimeout(debouncedUpdateDescription.value);
+    debouncedUpdateDescription.value = setTimeout(async () => { await handleUpdateDescription(); }, 1000);
 };
 
-
-const handleUpdateDescription = async () => {
+const handleUpdateDescription = async () => { // Función para actualizar la descripción de la incidencia (comentario)
     if (!selectedIncidencia.value) return;
     guardandoComentario.value = true;
     const token = localStorage.getItem('token');
-    if (!token) {
-        throw new Error('No token found');
-    }
+    if (!token) throw new Error('No token found');
     try {
         const apiUrl = `${API_AUTH_URL}/incidencia/update_description/${selectedIncidencia.value.id}`;
-        const requestData = {
-            descripcion: commentText.value,
-        };
-
-        const response = await axios.put(apiUrl,requestData, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        if (response.status === 200) {
-            selectedIncidencia.value.descripcion = commentText.value;
-        }
+        const requestData = { descripcion: commentText.value };
+        const response = await axios.put(apiUrl,requestData, { headers: { Authorization: `Bearer ${token}` } });
+        if (response.status === 200) selectedIncidencia.value.descripcion = commentText.value;
     } catch (error) {
         console.error("Error al actualizar el comentario:", error);
-    }finally{
+        showErrorToast("Error al actualizar el comentario.");
+    } finally {
         guardandoComentario.value = false;
     }
 };
-const handleReclamarIncidencia = async () => {
+
+
+const handleReclamarIncidencia = async () => { // Función para reclamar una incidencia por un técnico
     if(!selectedIncidencia.value) return;
     reclamandoIncidencia.value = true;
     const token = localStorage.getItem('token');
-    if(!token){
-        throw new Error('No token found');
-    }
+    if(!token) throw new Error('No token found');
     try{
         const apiUrl = `${API_AUTH_URL}/tecnico_incidencia/reclamar_incidencia_multiple`;
-        const requestData = {
-            id_incidencia: selectedIncidencia.value.id
-        };
-
-        const response = await axios.post(apiUrl,requestData,{
-            headers:{
-                Authorization: `Bearer ${token}`
-            }
-        });
+        const requestData = { id_incidencia: selectedIncidencia.value.id };
+        const response = await axios.post(apiUrl,requestData,{ headers:{ Authorization: `Bearer ${token}` } });
         if(response.status === 200 || response.status === 201){
-       console.log('Incidencia reclamada con éxito');
-          await Promise.all([
-        loadIncidenciasDashboard(),
-        loadIncidenciasPanel(),
-        fetchTecnicoIncidencias()
-    ]);
-     if(selectedIncidencia.value.status !== 'En curso'){
-            selectedIncidencia.value.status = 'En curso';
-        }
-        console.log('selectedIncidencia.status', selectedIncidencia.value.status)
-    }
-        else {
+          await Promise.all([ loadIncidenciasDashboard(), loadIncidenciasPanel(), fetchTecnicoIncidencias() ]);
+          if(selectedIncidencia.value.status !== 'En curso') selectedIncidencia.value.status = 'En curso';
+          showSuccessToast("Incidencia reclamada!"); // Show toast on successful claim
+    } else {
              if (response.status === 400) {
                 errorMessage.value = 'No puedes reclamar más de una incidencia a la vez.';
                 showErrorPopup.value = true;
             } else {
                 console.error('Error al reclamar la incidencia, respuesta no exitosa', response);
-                alert("Error al reclamar la incidencia: " + (response.data.message || "Compruebe la consola para más información"));
+                showErrorToast("Error al reclamar la incidencia: " + (response.data.message || "Compruebe la consola para más información"));
             }
         }
     }catch(error){
@@ -856,95 +769,76 @@ const handleReclamarIncidencia = async () => {
                 showErrorPopup.value = true;
             } else{
                  console.error('Error al reclamar la incidencia:', error);
-                alert("Error al reclamar la incidencia: " + (error.message || "Compruebe la consola para más información"));
+                showErrorToast("Error al reclamar la incidencia: " + (error.message || "Compruebe la consola para más información"));
          }
     }finally{
         reclamandoIncidencia.value = false;
     }
 }
-const closeErrorPopup = () =>{
-    showErrorPopup.value         = false;
+
+const closeErrorPopup = () =>{ // Función para cerrar el popup de error
+    showErrorPopup.value = false;
     errorMessage.value = '';
 }
-const openMotivoSalidaPopup = () => {
-    showMotivoSalidaPopup.value = true;
-};
 
-const closeMotivoSalidaPopup = () => {
+const openMotivoSalidaPopup = () => { showMotivoSalidaPopup.value = true; }; // Función para abrir el popup de motivo de salida
+const closeMotivoSalidaPopup = () => { // Función para cerrar el popup de motivo de salida
     showMotivoSalidaPopup.value = false;
     motivoSalida.value = '';
 };
-const handleSalirIncidencia = async () => {
+
+const handleSalirIncidencia = async () => { // Función para que un técnico salga de una incidencia
     if(!selectedIncidencia.value) return;
     const token = localStorage.getItem('token');
-    if(!token){
-        throw new Error('No token found');
-    }
+    if(!token) throw new Error('No token found');
     try{
         const apiUrl = `${API_AUTH_URL}/tecnico_incidencia/salir_incidencia`;
-        const requestData = {
-            id_incidencia: selectedIncidencia.value.id,
-            motivo_salida: motivoSalida.value
-        };
-
-        const response = await axios.put(apiUrl,requestData,{
-            headers:{
-                Authorization: `Bearer ${token}`
-            }
-        });
+        const requestData = { id_incidencia: selectedIncidencia.value.id, motivo_salida: motivoSalida.value };
+        const response = await axios.put(apiUrl,requestData,{ headers:{ Authorization: `Bearer ${token}` } });
         if(response.status === 200){
             closeMotivoSalidaPopup();
             closeIncidenciaDetailsPopup();
-           await Promise.all([
-            loadIncidenciasDashboard(),
-            loadIncidenciasPanel()
-        ]);
+            await Promise.all([ loadIncidenciasDashboard(), loadIncidenciasPanel() ]);
+            showSuccessToast("Saliste de la incidencia!"); // Show toast on successful leave
         }
     }catch (error){
         console.error('Error al salir de la incidencia:',error);
+        showErrorToast('Error al salir de la incidencia.');
     }
 }
-const openMotivoCierrePopup = () => {
-    showMotivoCierrePopup.value = true;
-};
 
-const closeMotivoCierrePopup = () => {
+const openMotivoCierrePopup = () => { showMotivoCierrePopup.value = true; }; // Función para abrir el popup de motivo de cierre
+const closeMotivoCierrePopup = () => { // Función para cerrar el popup de motivo de cierre
     showMotivoCierrePopup.value = false;
     motivoCierre.value = '';
 };
-const handleCerrarIncidencia = async () => {
+
+const handleCerrarIncidencia = async () => { // Función para cerrar una incidencia por un técnico
     if(!selectedIncidencia.value) return;
     const token = localStorage.getItem('token');
-    if(!token){
-        throw new Error('No token found');
-    }
+    if(!token) throw new Error('No token found');
     try{
         const apiUrl = `${API_AUTH_URL}/tecnico_incidencia/cerrar_incidencia`;
-        const requestData = {
-            id_incidencia: selectedIncidencia.value.id,
-            motivo_salida: motivoCierre.value,
-        };
-        const response = await axios.put(apiUrl,requestData,{
-            headers:{
-                Authorization: `Bearer ${token}`
-            }
-        });
+        const requestData = { id_incidencia: selectedIncidencia.value.id, motivo_salida: motivoCierre.value };
+        const response = await axios.put(apiUrl,requestData,{ headers:{ Authorization: `Bearer ${token}` } });
         if(response.status === 200){
-            await  Promise.all([
-            loadIncidenciasDashboard(),
-            loadIncidenciasPanel()
-        ]);
-             selectedIncidencia.value.status = 'Cerrada';
+            await  Promise.all([ loadIncidenciasDashboard(), loadIncidenciasPanel() ]);
+            selectedIncidencia.value.status = 'Cerrada';
             closeMotivoCierrePopup();
             closeIncidenciaDetailsPopup();
+            showSuccessToast("Incidencia cerrada!"); // Show toast on successful close
         }
     }catch (error){
         console.error('Error al cerrar la incidencia', error);
+        showErrorToast('Error al cerrar la incidencia.');
     }
 }
 </script>
+
+
 <style lang="scss" scoped>
-// Definición de colores
+// Estilos CSS (sin cambios, se asume que ya están optimizados y funcionales)
+// ... (mismo código CSS proporcionado anteriormente) ...
 $color-white: #fff;
 $color-light-gray: #f8f8f8;
 $color-gray: #ddd;
@@ -1175,32 +1069,32 @@ $estados: (nueva: $color-new, pendiente: $color-pending, mantenimiento: $color-m
 .create-incidencia-card {
     cursor: pointer;
     transition: all 0.3s;
-  
+
     &:hover {
       transform: scale(1.02);
       box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.7);
     }
   }
-  
+
   .card-body-same-height {
     min-height: 100px;
       @include flex-center(center, center, column);
   }
-  
+
   .glassmorphic-card {
      @include glassmorphic-card();
   }
-  
+
   .pendiente-h2 {
     color: $color-pending;
     font-size: 70px;
   }
-  
+
   .curso-h2 {
     color: $color-in-progress;
     font-size: 70px;
   }
-  
+
   .cerrado-h2 {
     color: $color-maintenance;
     font-size: 70px;
@@ -1209,86 +1103,86 @@ $estados: (nueva: $color-new, pendiente: $color-pending, mantenimiento: $color-m
     color: $color-white;
     font-size: 70px;
 }
-  
+
   .text-muted {
     color: rgba(54, 54, 54, 0.6) !important;
   }
-  
+
   .h3 {
     color: rgba($color-white, 0.9);
   }
-  
+
   table {
     background-color: transparent !important;
   }
-  
+
   .table-responsive {
     max-height: calc(100vh - 300px);
     overflow-y: auto;
     background-color: transparent !important;
   }
-  
+
   .table > :not(caption) > * > * {
     background-color: transparent !important;
   }
-  
+
   canvas {
     max-height: 300px;
   }
-  
+
   .status-dot {
     display: inline-block;
     width: 10px;
     height: 10px;
     border-radius: 50%;
   }
-  
+
   .card.h-100 {
     height: calc(100vh - 200px) !important;
   }
-  
+
   .card-body {
     padding: 1.5rem;
   }
     .card-bodytotal {
       padding: 1.7rem;
     }
-  
+
   .incidencias-container {
     max-height: 600px;
     overflow-y: auto;
     padding: 0 10px;
   }
-  
+
   /* Add smooth scrollbar for the tickets container */
   .incidencias-container::-webkit-scrollbar {
     width: 8px;
   }
-  
+
   .incidencias-container::-webkit-scrollbar-track {
     background: rgba($color-white, 0.1);
     border-radius: 4px;
   }
-  
+
   .incidencias-container::-webkit-scrollbar-thumb {
     background: rgba(0, 0, 0, 0.2);
     border-radius: 4px;
   }
-  
+
   .incidencias-container::-webkit-scrollbar-thumb:hover {
     background: rgba(0, 0, 0, 0.3);
   }
-  
+
   .form-group {
     margin-bottom: 1rem;
   }
-  
+
   .form-group label {
     display: block;
     margin-bottom: 0.5rem;
     color: $color-dark-gray;
   }
-  
+
   .popup-btn1 {
     background: $color-primary;
     color: $color-white;
@@ -1299,7 +1193,7 @@ $estados: (nueva: $color-new, pendiente: $color-pending, mantenimiento: $color-m
     border-radius: 2rem;
     cursor: pointer;
   }
-  
+
   .popup-btn.primary {
     background-color: rgba($color-white, 0.8);
     color: #000000;
@@ -1308,7 +1202,7 @@ $estados: (nueva: $color-new, pendiente: $color-pending, mantenimiento: $color-m
         background-color: $color-danger;
         color: $color-white;
     }
-  
+
   .popup-overlay {
     position: fixed;
     top: 0;
@@ -1319,7 +1213,7 @@ $estados: (nueva: $color-new, pendiente: $color-pending, mantenimiento: $color-m
      @include flex-center();
     z-index: 1000;
   }
-  
+
   .popup-card {
     width: 700px;
     min-height: 300px;
@@ -1333,21 +1227,21 @@ $estados: (nueva: $color-new, pendiente: $color-pending, mantenimiento: $color-m
     overflow: hidden;
     /* Asegura que el contenido no se salga del borde */
   }
-  
+
   .popup-title {
     font-size: 2.5rem;
     margin-bottom: 1rem;
     text-align: center;
     color: #222;
   }
-  
+
   .popup-subtitle {
     font-size: 1.2rem;
     margin-bottom: 2rem;
     text-align: center;
     color: #444;
   }
-  
+
   .popup-content {
     margin-bottom: 2rem;
       @include flex-center(flex-start, flex-start, column);
@@ -1355,13 +1249,13 @@ $estados: (nueva: $color-new, pendiente: $color-pending, mantenimiento: $color-m
     padding-right: 10px;
     gap: 1rem;
   }
-  
+
   .popup-actions {
     @include flex-center();
     gap: 1rem;
     margin-top: 20px;
   }
-  
+
   .popup-btn {
     background: none;
     border: none;
@@ -1371,7 +1265,7 @@ $estados: (nueva: $color-new, pendiente: $color-pending, mantenimiento: $color-m
     border-radius: 2rem;
     cursor: pointer;
   }
-  
+
   .glassmorphic-btn {
     background: rgba($color-white, 0.2);
     backdrop-filter: blur(10px);
@@ -1383,13 +1277,13 @@ $estados: (nueva: $color-new, pendiente: $color-pending, mantenimiento: $color-m
           background: rgba($color-white, 0.3);
       }
   }
-  
-  
+
+
   .popup-btn.primary {
     background-color: rgba($color-white, 0.8);
     color: #000000;
   }
-  
+
   .glassmorphic-btn.cancel-btn {
     color: #000;
     background: rgba($color-white, 0.8);
@@ -1397,8 +1291,8 @@ $estados: (nueva: $color-new, pendiente: $color-pending, mantenimiento: $color-m
           background: rgba($color-white, 0.9);
       }
     }
-  
-  
+
+
   .custom-textarea {
     width: 100%;
     padding: 10px;
@@ -1428,7 +1322,7 @@ $estados: (nueva: $color-new, pendiente: $color-pending, mantenimiento: $color-m
   :root {
     --color-primario: #007bff;
   }
-  
+
   .priority-filter {
     cursor: pointer;
     position: relative;
@@ -1441,27 +1335,25 @@ $estados: (nueva: $color-new, pendiente: $color-pending, mantenimiento: $color-m
           text-decoration-thickness: 4px;
       }
   }
-  
-  
+
+
   .boton-filtro{
     cursor: pointer;
     position: relative;
     padding: 5px;
       @include flex-center();
     border-radius: 12px;
-    border: 0.5px solid black;
       &:hover {
           opacity: 0.8;
       }
   }
-  
-  
-  
+
+
   .imagen-filtro{
     width: 20px;
   }
-  
-  
+
+
   .glassmorphic-select{
     background: rgba($color-white, 0.2);
     border: 1px solid rgba($color-white, 0.3);
@@ -1470,7 +1362,7 @@ $estados: (nueva: $color-new, pendiente: $color-pending, mantenimiento: $color-m
     color: $color-text;
     width: 300px;
   }
-  
+
   .search-bar {
     margin-bottom: 20px;
       @include flex-center();
@@ -1485,48 +1377,48 @@ $estados: (nueva: $color-new, pendiente: $color-pending, mantenimiento: $color-m
       width: 50% !important;
       max-width: 50% !important;
     }
-  
+
     .incidencia-list {
       padding: 10px;
       margin-top: 10px;
     }
-  
+
     .incidencia-list-header {
       font-size: 0.9rem;
       padding: 0 5px 10px 5px;
       margin-bottom: 10px;
     }
-  
+
     .incidencia-item {
       padding: 10px;
       margin-bottom: 5px;
       gap: 10px;
     }
-  
+
     .incidencia-date {
       min-width: 70px;
       font-size: 0.7rem;
     }
-  
+
     .incidencia-content {
       gap: 10px;
     }
-  
+
     .priority-marker {
       height: 30px;
       margin-right: 3px;
     }
-  
+
     .incidencia-text {
       font-size: 0.8rem;
       margin-left: 5px;
     }
-  
+
     .incidencia-status {
       padding: 4px 8px;
       font-size: 0.7rem;
     }
-  
+
     .card-body {
       padding: 1rem;
     }
@@ -1552,17 +1444,17 @@ $estados: (nueva: $color-new, pendiente: $color-pending, mantenimiento: $color-m
       .popup-content{
           margin-bottom: 1rem;
       }
-  
+
       .popup-title {
           font-size: 1.5rem;
           margin-bottom: 0.8rem;
       }
-  
+
       .popup-subtitle {
           font-size: 1rem;
           margin-bottom: 1.5rem;
       }
-  
+
       .popup-actions {
           margin-top: 10px;
           gap: 0.5rem;
@@ -1594,5 +1486,23 @@ $estados: (nueva: $color-new, pendiente: $color-pending, mantenimiento: $color-m
           max-width: 100% !important;
       }
 
+  }
+
+  .loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    padding: 20px;
+  }
+
+  /* Glassmorphic toast styles */
+  .glassmorphic-toast {
+    @include glassmorphic-card();
+    color: $color-text;
+  }
+
+  .glassmorphic-toast-body {
+    padding: 15px;
   }
 </style>
