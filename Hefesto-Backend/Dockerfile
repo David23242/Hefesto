@@ -19,9 +19,7 @@ COPY . /var/www/html
 
 # Instala las dependencias de Laravel usando Composer
 RUN composer install --no-scripts
-
-# Genera la clave de la aplicación Laravel (puedes descomentar si es necesario)
-# RUN php artisan key:generate
+RUN php artisan storage:link
 
 # Cambia el propietario de los archivos al usuario www-data
 RUN chown -R www-data:www-data /var/www/html

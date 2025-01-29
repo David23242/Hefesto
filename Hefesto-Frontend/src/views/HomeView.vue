@@ -212,6 +212,16 @@ const userImagePath = computed(() => {
 
 // Hook de ciclo de vida: cuando el componente es montado
 onMounted(async () => {
+
+
+  const savedBackground = localStorage.getItem('selectedBackground');
+  if (savedBackground) {
+    applyBackground(savedBackground);
+  } else {
+    applyBackground('style1'); // Fondo predeterminado
+  }
+
+
   const token = localStorage.getItem('token');
   if (token) {
     try {
@@ -277,6 +287,22 @@ const isSidebarCollapsed = ref(false);
 const toggleSidebar = () => {
   isSidebarCollapsed.value = !isSidebarCollapsed.value;
 };
+
+// Función para aplicar el fondo de pantalla
+const applyBackground = (styleName) => {
+  const oldStyle = document.getElementById('dynamic-background-style');
+  if (oldStyle) {
+    oldStyle.remove();
+  }
+
+  const link = document.createElement('link');
+  link.id = 'dynamic-background-style';
+  link.rel = 'stylesheet';
+  link.href = `/backgrounds/${styleName}.css`;
+  document.head.appendChild(link);
+};
+
+
 </script>
 
 <style lang="scss" scoped>

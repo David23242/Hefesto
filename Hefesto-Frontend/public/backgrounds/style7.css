@@ -1,0 +1,23 @@
+@keyframes move { /* Puedes eliminar esto, ya no se usa */
+    100% {
+        transform: translate3d(0, 0, 1px) rotate(360deg);
+    }
+}
+
+.background {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    background-color: #e5e5f7; /* Mantenemos el color base por si el degradado no cubre todo */
+    opacity: 0.8; /* Mantenemos la opacidad */
+    background-image: linear-gradient(to bottom, #ff1100, #750101); /* Nuevo degradado rojo lineal */
+    overflow: hidden;
+}
+
+.background span {
+    display: none; /* Ocultamos los spans */
+}
+
+/* Los estilos nth-child y @keyframes move pueden ser eliminados */

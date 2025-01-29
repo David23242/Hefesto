@@ -144,7 +144,7 @@ const applyBackground = (styleName) => {
   const link = document.createElement('link');
   link.id = 'dynamic-background-style';
   link.rel = 'stylesheet';
-  link.href = `/src/assets/backgrounds/${styleName}.css`;
+  link.href = `/backgrounds/${styleName}.css`;
   document.head.appendChild(link);
 };
 

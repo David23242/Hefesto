@@ -1,0 +1,21 @@
+@keyframes move { 
+    100% {
+        transform: translate3d(0, 0, 1px) rotate(360deg);
+    }
+}
+
+.background {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    background-color: #E6E0E9; 
+    opacity: 0.8;
+    background-image: linear-gradient(to bottom, #b64aec, #800080); 
+    overflow: hidden;
+}
+
+.background span {
+    display: none; 
+}
