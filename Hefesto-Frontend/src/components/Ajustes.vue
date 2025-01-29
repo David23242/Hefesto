@@ -204,6 +204,7 @@ const handleAction = async () => {
 
   if (actions[popup.type]) await actions[popup.type]();
   closePopup();
+  location.reload();
 };
 
 // Métodos de archivos

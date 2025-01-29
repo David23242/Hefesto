@@ -14,7 +14,7 @@ services:
       - APP_KEY=base64:xIDGkjA9OBCNHeIsTb4kGfqwqpB3t8z4ywQlPtW1L90=
       - JWT_SECRET=YyQJwvGf3CWj8WPMXMgbp0ZZoBo2EBg7b6I2XG05TLpGwQu1smpQ7d4GIwdQ6x7t
       - APP_DEBUG=true
-      - APP_TIMEZONE=UTC
+      - APP_TIMEZONE=Europe/Madrid
       - APP_URL=http://localhost
       - APP_LOCALE=en
       - APP_FALLBACK_LOCALE=en
@@ -27,7 +27,7 @@ services:
       - LOG_DEPRECATIONS_CHANNEL=null
       - LOG_LEVEL=debug
       - DB_CONNECTION=mysql
-      - DB_HOST=172.20.227.241
+      - DB_HOST=150.241.37.58
       - DB_PORT=3306
       - DB_DATABASE=grupo6_2425
       - DB_USERNAME=grupo6_2425
