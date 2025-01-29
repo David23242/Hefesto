@@ -19,7 +19,7 @@
   }
 
   .ball {
-    background: rgba(96, 4, 132, 0.7);
+    background: rgb(226, 226, 226);
   }
 
   

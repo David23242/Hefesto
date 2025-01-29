@@ -5,16 +5,16 @@
     <div v-if="!activeCrud">
       <div class="row">
         <!-- Generación dinámica de tarjetas CRUD -->
-        <div 
-          v-for="(column, index) in crudItems" 
-          :key="index" 
+        <div
+          v-for="(column, index) in crudItems"
+          :key="index"
           class="col-md-6 h-100"
         >
           <div class="d-flex flex-column h-100">
-            <button 
-              v-for="item in column" 
+            <button
+              v-for="item in column"
               :key="item.name"
-              class="glass-card mb-4" 
+              class="glass-card mb-4"
               @click="openCrud(item.crudKey)"
             >
               <div class="d-flex justify-content-between align-items-center h-100">
@@ -22,9 +22,9 @@
                   <h2 class="card-text">{{ item.title }}</h2>
                 </div>
                 <div class="card-body text-center image-container">
-                  <img 
-                    :src="item.icon" 
-                    :class="item.imageClass" 
+                  <img
+                    :src="item.icon"
+                    :class="item.imageClass"
                   />
                 </div>
               </div>
@@ -36,8 +36,8 @@
 
     <!-- Transiciones para componentes CRUD -->
     <transition name="fade">
-      <component 
-        :is="activeComponent" 
+      <component
+        :is="activeComponent"
         v-if="activeCrud"
         @close="closeCrud"
         :enableEntity="handleEnable"
@@ -71,6 +71,13 @@ import CRUDsecciones from "./CRUDsecciones.vue";
 import CRUDmaquinas from "./CRUDmaquinas.vue";
 import MaquinasPopup from "./MaquinasPopup.vue";
 
+// Importar las imagenes directamente
+import iconUsuarios from '@/assets/images/icons/usuarios.svg';
+import iconCampuses from '@/assets/images/icons/campuses.svg';
+import iconSecciones from '@/assets/images/icons/secciones.svg';
+import iconMaquinas from '@/assets/images/icons/maquinas.svg';
+
+
 // Configuración de constantes
 const API_AUTH_URL = import.meta.env.VITE_API_AUTH_URL;
 const IMAGE_URL = import.meta.env.VITE_IMAGE_URL;
@@ -95,32 +102,32 @@ const popup = ref({
 // Configuración de items CRUD
 const crudItems = [
   [
-    { 
-      title: "Usuarios", 
-      icon: "../src/assets/images/icons/usuarios.svg",
+    {
+      title: "Usuarios",
+      icon: iconUsuarios,
       crudKey: "usuarios",
       component: CRUDusuario,
       endpoint: "usuario"
     },
-    { 
-      title: "Campuses", 
-      icon: "../src/assets/images/icons/campuses.svg",
+    {
+      title: "Campuses",
+      icon: iconCampuses,
       crudKey: "campus",
       component: CRUDcampus,
       endpoint: "campus"
     }
   ],
   [
-    { 
-      title: "Secciones", 
-      icon: "../src/assets/images/icons/secciones.svg",
+    {
+      title: "Secciones",
+      icon: iconSecciones,
       crudKey: "secciones",
       component: CRUDsecciones,
       endpoint: "seccion"
     },
-    { 
-      title: "Maquinas", 
-      icon: "../src/assets/images/icons/maquinas.svg",
+    {
+      title: "Maquinas",
+      icon: iconMaquinas,
       crudKey: "maquinas",
       component: CRUDmaquinas,
       endpoint: "maquina",
@@ -255,7 +262,7 @@ $white-09: rgba(255, 255, 255, 0.9);
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
-    
+
     &.maquinaImage {
       width: 200px;
       height: 200px;
