@@ -328,7 +328,7 @@ $white-opacities: (
 }
 
 /* Mixins reutilizables */
-@mixin glass-card($opacity: 09) {
+@mixin glass-card($opacity: 07) {
   background: white($opacity) !important;
   backdrop-filter: blur(8px);
   border: 1px solid white($opacity) !important;
