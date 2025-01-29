@@ -260,6 +260,35 @@ class TecnicoIncidenciaController extends Controller
         }
     }
 
+    public function getDetalleIncidenciaTecnicos($id_incidencia)
+    {
+        try {
+            $detalles = TecnicoIncidencia::where('id_incidencia', $id_incidencia)
+                ->with('tecnico:id,name') // Eager load the tecnico relation to get the name
+                ->get()
+                ->map(function ($tecnicoIncidencia) {
+
+                    $usuario = User::find($tecnicoIncidencia->id_tecnico);
+
+
+                    return [
+                        'id' => $tecnicoIncidencia->id,
+                        'nombre_usuario' => $usuario->name, // Access the user's name
+                        'fecha_entrada' => $tecnicoIncidencia->fecha_entrada,
+                        'fecha_salida' => $tecnicoIncidencia->fecha_salida,
+                        'tiempo_trabajado' => $tecnicoIncidencia->tiempo_trabajado,
+                    ];
+                });
+
+            return response()->json(['data' => $detalles], Response::HTTP_OK);
+        } catch (Exception $e) {
+            return response()->json([
+                'error' => 'Error al obtener el detalle de técnicos de la incidencia.',
+                'message' => $e->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
 
 }
