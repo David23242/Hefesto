@@ -198,7 +198,7 @@
           </div>
           <div class="action-buttons mt-auto">
             <button
-              v-if="isTecnicoOrAdmin && selectedIncidencia.status !== 'En curso' && !hasReclamada"
+              v-if="(isTecnico || isAdmin) && selectedIncidencia.status !== 'En curso' && !hasReclamada"
               class="popup-btn primary"
               @click="handleReclamarIncidencia"
               :disabled="reclamandoIncidencia"
@@ -206,7 +206,7 @@
               {{ reclamandoIncidencia ? 'Reclamando...' : 'Reclamar Mantenimiento' }}
             </button>
             <div
-              v-if="isTecnicoOrAdmin && selectedIncidencia.status === 'En curso'"
+              v-if="(isTecnico || isAdmin) && selectedIncidencia.status === 'En curso'"
               class="d-flex justify-content-center gap-2"
             >
               <button class="popup-btn1 cancel-btn" @click="openMotivoSalidaPopup">
@@ -216,10 +216,48 @@
                 Cerrar Mantenimiento
               </button>
             </div>
+             <!-- Botón para ver detalles de técnicos - Añadido aquí -->
+            <button v-if="(isTecnico || isAdmin)" class="popup-btn primary mt-3" @click="openTecnicoDetailsPopup">Detalle Técnicos</button>
           </div>
         </div>
         <div v-else>
           <p>No hay detalles de mantenimiento para mostrar</p>
+        </div>
+      </template>
+    </GlassmorphicPopup>
+
+    <!-- Popup de detalles técnicos en el mantenimiento - Nuevo Popup -->
+    <GlassmorphicPopup
+      :visible="showTecnicoDetailsPopup"
+      title="Detalle de Técnicos en Mantenimiento"
+      closeButtonText="Cerrar"
+      @close="closeTecnicoDetailsPopup"
+    >
+      <template #popup-content>
+        <div v-if="tecnicoDetailsData && tecnicoDetailsData.length > 0">
+          <div class="table-responsive">
+            <table class="table table-borderless">
+              <thead>
+                <tr>
+                  <th>Usuario</th>
+                  <th>Entrada</th>
+                  <th>Salida</th>
+                  <th>Tiempo Trabajado</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="detail in tecnicoDetailsData" :key="detail.id">
+                  <td>{{ detail.nombre_usuario }}</td>
+                  <td>{{ formatDateTime(detail.fecha_entrada) }}</td>
+                  <td>{{ detail.fecha_salida ? formatDateTime(detail.fecha_salida) : 'En curso' }}</td>
+                  <td>{{ detail.tiempo_trabajado ? formatTimeWorked(detail.tiempo_trabajado) : 'En curso' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div v-else>
+          <p>No hay detalles de técnicos para mostrar en este mantenimiento.</p>
         </div>
       </template>
     </GlassmorphicPopup>
@@ -317,6 +355,7 @@ import GlassmorphicPopup from './GlassmorphicPopup.vue';
 import CustomSelect from './CustomSelect.vue';
 import CustomInput from './CustomInput.vue';
 import { useToast } from 'vue-toastification';
+import moment from 'moment';
 
 // Estados reactivos
 const loading = ref(true);
@@ -333,6 +372,7 @@ const ALL_TECNICO_INCIDENCIA_URL = `${API_AUTH_URL}/tecnico_incidencia/all`;
 const ME_URL = `${API_AUTH_URL}/auth/me`;
 const CAMPUS_ALL_URL = `${API_AUTH_URL}/campus/all`;
 const SECCION_ALL_URL = `${API_AUTH_URL}/seccion/all`;
+const TECNICO_INCIDENCIA_DETALLES_URL = `${API_AUTH_URL}/tecnico_incidencia/detalle_incidencia_tecnicos`; // Nueva URL para detalles tecnicos
 const userPicture = localStorage.getItem('picture');
 const userId = localStorage.getItem('id');
 const userRole = ref(null);
@@ -370,10 +410,17 @@ const searchQueryTemp = ref('');
 const selectedSeccionTemp = ref(null);
 const selectedCampusTemp = ref(null);
 
+// Nuevo estado para el popup de detalles técnicos
+const showTecnicoDetailsPopup = ref(false);
+const tecnicoDetailsData = ref([]);
+
 // Toast instance
 const toast = useToast();
 const defaultToastOptions = { position: 'top-right', timeout: 3000, closeOnClick: true, hideProgressBar: true };
 const showToast = (message, type = 'success') => toast[type](message, defaultToastOptions);
+const showErrorToast = (message, options = {}) => {
+toast.error(message, { ...defaultToastOptions, ...options });
+};
 
 const obtenerPrioridad = (prioridad) => ['alta', 'media', 'baja'].includes(prioridad) ? prioridad : 'baja';
 
@@ -389,16 +436,37 @@ const obtenerEstado = (estado) => {
 };
 
 const formatDate = (dateString) => {
+  if (!dateString) return 'Invalid Date'; // Seguridad por si es null o undefined
   const date = new Date(dateString);
+  if (isNaN(date)) {
+    return 'Invalid Date';
+  }
   const options = { year: 'numeric', month: 'long', day: 'numeric' };
   return date.toLocaleDateString(undefined, options);
 };
 
 const formatTime = (dateString) => {
+  if (!dateString) return 'Invalid Date'; // Seguridad por si es null o undefined
   const date = new Date(dateString);
+  if (isNaN(date)) {
+    return 'Invalid Date';
+  }
   const options = { hour: '2-digit', minute: '2-digit' };
   return date.toLocaleTimeString(undefined, options);
 };
+
+const formatDateTime = (dateString) => {
+  if (!dateString) return '-';
+  return moment(dateString).format('YYYY-MM-DD HH:mm');
+};
+
+const formatTimeWorked = (minutes) => {
+  if (!minutes) return '-';
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  return `${hours}h ${mins}m`;
+};
+
 
 const fetchData = async () => {
   const token = localStorage.getItem('token');
@@ -431,13 +499,10 @@ const fetchMaquinas = async () => {
   if (!token) throw new Error('No token found');
   try {
     const response = await axios.post(ALL_MAQUINAS_URL, {}, { headers: { Authorization: `Bearer ${token}` } });
-    console.log("Respuesta de fetchMaquinas:", response); // <-- Añadido console.log para la respuesta completa
-    console.log("Data de maquinas:", response.data); // <-- Añadido console.log para response.data
     if (response.data && Array.isArray(response.data.data)) {
       return response.data.data || [];
     } else {
-      console.warn("Respuesta de maquinas no tiene el formato esperado:", response.data); // <-- Advertencia si no es array
-      return []; // Retorna un array vacío para evitar errores
+      return [];
     }
   } catch (error) {
     console.error('Error al obtener las maquinas:', error);
@@ -461,6 +526,20 @@ const fetchTecnicoIncidencias = async () => {
   }
 };
 
+const fetchTecnicoIncidenciaDetails = async (incidenciaId) => {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('No token found');
+    const response = await axios.get(
+      `${TECNICO_INCIDENCIA_DETALLES_URL}/${incidenciaId}`, { headers: { Authorization: `Bearer ${token}` } });
+    tecnicoDetailsData.value = response.data.data;
+  } catch (error) {
+    console.error('Error al obtener los detalles de técnicos del mantenimiento:', error);
+    showErrorToast('Error al obtener los detalles de técnicos.');
+  }
+};
+
+
 const loadIncidencias = async () => {
   try {
     loading.value = true;
@@ -468,12 +547,12 @@ const loadIncidencias = async () => {
     incidencias.value = incidenciasData.map((incidencia) => ({
       ...incidencia,
       id: incidencia.id,
-      titulo: incidencia.nombre_mantenimiento,
-      subtitulo: incidencia.descripcion_mantenimiento,
+      titulo: incidencia.titulo, // <-- Usando 'titulo' del JSON
+      subtitulo: incidencia.subtitulo, // <-- Usando 'subtitulo' del JSON
       priority: obtenerPrioridad(incidencia.prioridad),
       status: obtenerEstado(incidencia.estado),
-      date: formatDate(incidencia.fecha_programada),
-      time: formatTime(incidencia.fecha_programada),
+      date: formatDate(incidencia.fecha_apertura), // <-- Usando 'fecha_apertura'
+      time: formatTime(incidencia.fecha_apertura), // <-- Usando 'fecha_apertura'
       descripcion: incidencia.descripcion,
       id_tecnico: incidencia.id_mantenimiento,
     }));
@@ -590,17 +669,16 @@ onMounted(async () => {
       fetchTipoIncidencias(),
       fetchMantenimientosOptions(),
       fetchCampusAndSections(),
+      fetchTecnicoIncidencias() // Cargar técnicos de incidencia al inicio
     ]);
 
-    const maquinasData = await fetchMaquinas(); // Obtén los datos de máquinas aquí
-    maquinas.value = maquinasData; // Asigna directamente los datos a maquinas.value
-    console.log("Maquinas fetched:", maquinas.value); // <-- Añadido console.log para maquinas.value
+    const maquinasData = await fetchMaquinas();
+    maquinas.value = maquinasData;
 
     maquinasOptions.value = maquinas.value.map((maquina) => ({
       id: maquina.id,
       label: maquina.nombre_maquina,
     }));
-    console.log("Maquinas Options:", maquinasOptions.value); // <-- Añadido console.log para maquinasOptions.value
 
 
     await loadIncidencias();
@@ -632,6 +710,7 @@ const closeIncidenciaDetailsPopup = () => {
   commentText.value = '';
   motivoSalida.value = '';
   motivoCierre.value = '';
+  closeTecnicoDetailsPopup(); // Asegurar que se cierre el popup de detalles técnicos también
 };
 const openMotivoSalidaPopup = () => (showMotivoSalidaPopup.value = true);
 const closeMotivoSalidaPopup = () => {
@@ -655,6 +734,19 @@ const openFiltroPopup = () => {
 const closeFiltroPopup = () => {
   showFiltroPopup.value = false;
 };
+
+// Funciones para el nuevo popup de detalles técnicos
+const openTecnicoDetailsPopup = async () => {
+  if (selectedIncidencia.value) {
+    await fetchTecnicoIncidenciaDetails(selectedIncidencia.value.id);
+    showTecnicoDetailsPopup.value = true;
+  }
+};
+const closeTecnicoDetailsPopup = () => {
+  showTecnicoDetailsPopup.value = false;
+  tecnicoDetailsData.value = [];
+};
+
 
 // Handlers for Incidencias/Mantenimientos Actions
 const handleCreateMantenimiento = async () => {
@@ -681,7 +773,6 @@ const handleAsignarMantenimiento = async () => {
   if (!asignarMantenimiento.value.id_mantenimiento || !asignarMantenimiento.value.id_maquina) {
     return showToast('Por favor seleccione mantenimiento y máquina', 'warning');
   }
-  console.log("Datos para asignar mantenimiento:", asignarMantenimiento.value); // <-- Añadido console.log antes de la llamada a la API
   const token = localStorage.getItem('token');
   if (!token) throw new Error('No token found');
   try {
@@ -750,7 +841,6 @@ const handleReclamarIncidencia = async () => {
       errorMessage.value = 'No puedes reclamar más de un mantenimiento a la vez.';
       showErrorPopup.value = true;
     } else {
-      console.error('Error al reclamar el mantenimiento, respuesta no exitosa', response);
       errorMessage.value = `Error al reclamar el mantenimiento: ${response.data.message || 'Compruebe la consola'}`;
       showErrorPopup.value = true;
     }
@@ -759,7 +849,6 @@ const handleReclamarIncidencia = async () => {
       errorMessage.value = 'No puedes reclamar más de un mantenimiento a la vez.';
       showErrorPopup.value = true;
     } else {
-      console.error('Error al reclamar el mantenimiento:', error);
       errorMessage.value = `Error al reclamar el mantenimiento: ${error.message || 'Compruebe la consola'}`;
       showErrorPopup.value = true;
     }
@@ -813,7 +902,7 @@ const handleCerrarIncidencia = async () => {
 </script>
 
 <style lang="scss" scoped>
-// Estilos CSS (sin cambios, se asume que ya están optimizados y funcionales)
+// Estilos CSS (sin cambios)
 // ... (mismo código CSS proporcionado anteriormente) ...
 $color-white: #fff;
 $color-light-gray: #f8f8f8;

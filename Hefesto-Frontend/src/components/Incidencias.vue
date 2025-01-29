@@ -202,22 +202,25 @@ closeButtonText="Cerrar"
     <p>No hay comentarios para mostrar</p>
   </div>
   <div class="action-buttons mt-auto"  v-if="!isOperario">
-    <button
-      v-if="(isTecnico || isAdmin) && !isUserActiveInIncidencia && selectedIncidencia.status !== 'Cerrada'"
-      class="popup-btn primary"
-      @click="handleReclamarIncidencia"
-      :disabled="reclamandoIncidencia"
-    >
-      {{ reclamandoIncidencia ? 'Reclamando...' : 'Reclamar Incidencia' }}
-    </button>
-    <div v-if="isUserActiveInIncidencia && selectedIncidencia.status === 'En curso'" class="d-flex justify-content-center gap-2">
-      <button class="popup-btn1 cancel-btn" @click="openMotivoSalidaPopup">Salir de Incidencia</button>
-      <button  v-if="isSoloTecnico" class="popup-btn primary" @click="openMotivoCierrePopup">Cerrar Incidencia</button>
+    <div class="action-buttons-row">
+        <button
+          v-if="(isTecnico || isAdmin) && !isUserActiveInIncidencia && selectedIncidencia.status !== 'Cerrada'"
+          class="popup-btn primary"
+          @click="handleReclamarIncidencia"
+          :disabled="reclamandoIncidencia"
+        >
+          Reclamar Incidencia
+        </button>
+        <div v-if="isUserActiveInIncidencia && selectedIncidencia.status === 'En curso'" class="d-flex justify-content-center gap-2">
+          <button class="popup-btn1 cancel-btn" @click="openMotivoSalidaPopup">Salir de Incidencia</button>
+          <button  v-if="isSoloTecnico" class="popup-btn primary" @click="openMotivoCierrePopup">Cerrar Incidencia</button>
+        </div>
+    </div>
+    <div class="action-buttons-row">
+        <!-- Botón para ver detalles de técnicos CENTRADO -->
+        <button v-if="(isTecnico || isAdmin)" class="popup-btn primary" @click="openTecnicoDetailsPopup">Detalle Técnicos</button>
     </div>
   </div>
-
-  <!-- Botón para ver detalles de técnicos -->
-  <button v-if="(isTecnico || isAdmin)" class="popup-btn primary mt-3" @click="openTecnicoDetailsPopup">Detalle Técnicos</button>
 
 </div>
 <div v-else>
@@ -886,7 +889,7 @@ const response = await axios.put(apiUrl,requestData,{ headers:{ Authorization: `
 if(response.status === 200){
 closeMotivoSalidaPopup();
 closeIncidenciaDetailsPopup();
-await Promise.all([ loadIncidenciasDashboard(), loadIncidenciasPanel() ]);
+await Promise.all([ loadIncidenciasDashboard(), loadIncidenciasPanel(), fetchTecnicoIncidencias() ]); // Añadimos fetchTecnicoIncidencias() aquí
 showSuccessToast("Saliste de la incidencia!"); // Show toast on successful leave
 }
 }catch (error){
@@ -1353,6 +1356,15 @@ $estados: (nueva: $color-new, pendiente: $color-pending, mantenimiento: $color-m
     @include flex-center();
     gap: 1rem;
     margin-top: 20px;
+    flex-direction: column; // Stack rows vertically
+    align-items: stretch; // Make rows take full width
+  }
+
+  .action-buttons-row {
+    display: flex;
+    justify-content: center; // Center buttons horizontally in each row
+    gap: 0.5rem;
+    margin-bottom: 0.5rem; // Add some space between rows
   }
 
   .popup-btn {
@@ -1415,8 +1427,18 @@ $estados: (nueva: $color-new, pendiente: $color-pending, mantenimiento: $color-m
   }
   .action-buttons {
       margin-top: 1rem;
-        @include flex-center(center, center, column);
-    gap: 0.5rem;
+      display: flex; // Asegura que es flex container
+      justify-content: center; // Centra horizontalmente los elementos
+      align-items: center;
+      gap: 0.5rem;
+      flex-direction: column; /* Stack rows vertically */
+      align-items: stretch; /* Make rows take full width */
+  }
+  .action-buttons-row {
+      display: flex;
+      justify-content: center; /* Center buttons horizontally in each row */
+      gap: 0.5rem;
+      margin-bottom: 0.5rem; /* Add some space between rows */
   }
   :root {
     --color-primario: #007bff;

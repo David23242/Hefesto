@@ -296,12 +296,6 @@ const handleAction = async () => {
       const url = isTecnico.value ? REGISTER_TECNICO_URL : REGISTER_URL;
       const payload = {};
 
-      // Debugging: Imprime los valores de los campos justo antes de construir el payload
-      console.log('Valor de userData.nombre:', userData.value.name);
-      console.log('Valor de userData.email:', userData.value.email);
-      console.log('Valor de userData.password:', userData.value.password);
-      console.log('Valor de userData.id_campus:', userData.value.id_campus);
-
       // Campos requeridos
       if (!userData.value.name) {
           alert('El campo Nombre es obligatorio.');
@@ -335,8 +329,6 @@ const handleAction = async () => {
           payload.segundo_apellido = userData.value.segundo_apellido;
       }
 
-      // Debugging: Imprime el payload antes de enviarlo
-      console.log('Payload a enviar:', payload);
 
       const token = localStorage.getItem('token');
       const headers = {
@@ -344,7 +336,6 @@ const handleAction = async () => {
       };
 
       const response = await axios.post(url, payload, { headers });
-      console.log('Registro exitoso:', response.data);
        toast.success("Usuario registrado exitosamente!");
 
       // Restablecer los valores de userData a sus valores iniciales
@@ -377,7 +368,6 @@ try {
     Authorization: `Bearer ${token}`,
   };
      const response = await axios.get(`${USUARIO_ALL_URL}?per_page=20&page=${page}`, { headers });
-    console.log(response.data.data);
     users.value = response.data.data.data;
     pagination.value = {
         current_page: response.data.data.current_page,
@@ -407,7 +397,6 @@ if (event.target.checked) {
       selectedUsers.value.splice(index, 1);
   }
 }
-console.log('Usuarios seleccionados:', selectedUsers.value);
 };
 
 // Función para seleccionar todos los usuarios
@@ -417,7 +406,6 @@ if (allSelected.value) {
 } else {
   selectedUsers.value = [];
 }
-console.log('Usuarios seleccionados:', selectedUsers.value);
 };
 // Computed para sincronizar el checkbox selectAll
 allSelected.value = computed({
@@ -490,7 +478,6 @@ const handleEditUser = async (user) => {
   }
 
 
-console.log('Editing user:', user);
 };
 const updateUser = async () =>{
   try {
@@ -501,7 +488,6 @@ const updateUser = async () =>{
       const payload = {...editUserData.value}
       delete payload.id;
     const response = await axios.put(`${USUARIO_UPDATE_URL}/${editUserData.value.id}`,payload,{headers})
-       console.log("Respuesta de la api: ", response);
        toast.success("Usuario modificado exitosamente!");
       closeEditModal();
         fetchUsers(pagination.value.current_page)
@@ -526,7 +512,6 @@ if (confirm('¿Estás seguro de que quieres eliminar los usuarios seleccionados?
     // Eliminar usuarios individualmente
     for (const userId of selectedUsers.value) {
       await axios.put(`${USUARIO_DELETE_URL}/${userId}`, { habilitado: 0 }, { headers });
-      console.log(`Usuario ${userId} deshabilitado`);
     }
 
     toast.success('Usuarios deshabilitados exitosamente.');
