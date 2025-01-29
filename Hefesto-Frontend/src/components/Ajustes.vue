@@ -2,16 +2,16 @@
   <div class="container-fluid h-100">
     <div class="card-grid h-100">
       <!-- Tarjetas configuración -->
-      <button 
+      <button
         v-for="(card, index) in cards"
         :key="index"
         class="glass-card large-card grow full-height"
         @click="openPopup(card.type)"
       >
         <div class="card-body text-center d-flex flex-column justify-content-center align-items-center">
-          <img 
-            :src="`../src/assets/images/icons/${card.icon}.svg`" 
-            :alt="card.altText" 
+          <img
+            :src="getCardIconSrc(card.icon)"
+            :alt="card.altText"
             class="img-fluid mb-3 huge-icon"
           >
           <p class="card-text huge-text">{{ card.text }}</p>
@@ -76,10 +76,10 @@
       <!-- Contenido para fondos de pantalla -->
       <template v-else-if="popup.type === 'fondo'" #popup-content>
         <div class="background-options">
-          <div 
+          <div
             v-for="(bg, index) in backgrounds"
             :key="index"
-            class="background-option" 
+            class="background-option"
             @click="changeBackground(bg.id)"
           >
             <div class="preview" :style="{ background: bg.color }"></div>
@@ -96,6 +96,11 @@ import GlassmorphicPopup from "./GlassmorphicPopup.vue";
 import { ref, onMounted, computed, reactive } from "vue";
 import axios from "axios";
 import { useToast } from "vue-toastification";
+
+// Importa los iconos de las tarjetas
+import profileIcon from '../assets/images/icons/profile.svg';
+import passwordIcon from '../assets/images/icons/password.svg';
+import wallpaIcon from '../assets/images/icons/wallpa.svg';
 
 // Constantes de configuración
 const API_URLS = {
@@ -152,11 +157,26 @@ const backgrounds = [
 ];
 
 // Computados
-const userImagePath = computed(() => 
-  userData.picture 
+const userImagePath = computed(() =>
+  userData.picture
     ? `../src/assets/images/userpicture/${userData.picture}`
     : null
 );
+
+// Métodos para obtener las rutas de los iconos de las tarjetas
+const getCardIconSrc = (iconName) => {
+  switch (iconName) {
+    case 'profile':
+      return profileIcon;
+    case 'password':
+      return passwordIcon;
+    case 'wallpa':
+      return wallpaIcon;
+    default:
+      return null; // o una imagen por defecto si lo deseas
+  }
+};
+
 
 // Métodos principales
 const openPopup = (type) => {
@@ -166,7 +186,7 @@ const openPopup = (type) => {
     title: getPopupTitle(type),
     actionText: type === 'fondo' ? 'Aceptar' : 'Guardar'
   });
-  
+
   fileState.uploadSuccess = false;
 };
 
@@ -179,7 +199,7 @@ const handleAction = async () => {
     pwd: resetPwd,
     perfil: updateProfileImage
   };
-  
+
   if (actions[popup.type]) await actions[popup.type]();
   closePopup();
 };
@@ -198,7 +218,7 @@ const handleDrop = (event) => {
 
 const updateProfileImage = async () => {
   if (!fileState.selected) return;
-  
+
   const formData = new FormData();
   formData.append("image", fileState.selected);
 
@@ -206,7 +226,7 @@ const updateProfileImage = async () => {
     const { data } = await axios.post(API_URLS.image, formData, {
       headers: authHeader()
     });
-    
+
     userData.picture = data.path;
     fileState.uploadSuccess = true;
     toast.success("Imagen actualizada correctamente");
@@ -222,7 +242,7 @@ const resetPwd = async () => {
       current_password: passwordState.current,
       new_password: passwordState.new
     }, { headers: authHeader() });
-    
+
     toast.success("Contraseña actualizada correctamente");
     passwordState.current = null;
     passwordState.new = null;
@@ -257,6 +277,7 @@ const removeCurrentBackground = () => {
 };
 
 const applyNewBackground = (styleName) => {
+  // Directamente construimos la ruta al CSS aquí, ya que no es una imagen
   const link = document.createElement("link");
   link.id = "dynamic-background-style";
   link.rel = "stylesheet";
@@ -312,7 +333,7 @@ $white-opacities: (
   box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.3);
   border-radius: 16px;
   transition: transform 0.2s ease-in-out;
-  
+
   &:hover {
     transform: scale(1.05);
   }
@@ -345,7 +366,7 @@ $white-opacities: (
   cursor: pointer;
 
   &.large-card { padding: 45px; }
-  
+
   .huge-icon { max-width: 120px; }
   .huge-text { font-size: 1.8rem; }
 }
@@ -365,7 +386,7 @@ $white-opacities: (
     transition: background 0.3s ease;
 
     &:hover { background: white(03); }
-    
+
     .preview {
       width: 30px;
       height: 30px;
@@ -393,7 +414,7 @@ $white-opacities: (
       gap: 5px;
 
       svg { height: 50px; fill: #525252; margin-bottom: 20px; }
-      
+
       .browse-button {
         background-color: #525252;
         padding: 5px 15px;

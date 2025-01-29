@@ -30,7 +30,7 @@
     <div :class="['sidebar p-0 d-flex flex-column', { 'collapsed': isSidebarCollapsed }]">
       <!-- Logo del dashboard -->
       <div class="logo mb-5 p-4">
-        <img :src="logoImg" alt="Logo" class="img-fluid mb-4" style="max-width: 150px;">
+        <img :src="logoImg" alt="Logo" class="img-fluid mb-4" style="max-width: 210px;">
       </div>
 
       <!-- Navegación del sidebar -->
