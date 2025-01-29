@@ -1,29 +1,23 @@
+@keyframes move { 
+    100% {
+        transform: translate3d(0, 0, 1px) rotate(360deg);
+    }
+}
+
 .background {
-    position: absolute;
-    overflow: hidden;
-    width: 100%;
-    height: 100%;
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
     top: 0;
     left: 0;
-    background: linear-gradient(to right, #d86bff, #51057a);
-    display: flex;
-    flex-grow: 1;
+    background-color: #e5e5f7; 
+    opacity: 0.8; 
+    background-image:  repeating-radial-gradient( circle at 0 0, transparent 0, #e5e5f7 10px ), repeating-linear-gradient( #38005c55, #38005c ); /* Nueva imagen de fondo degradado */
+    overflow: hidden; 
 }
 
-.background div {
-    position: absolute;
-    border-radius: 100%;
-    height: 0;
-    filter: blur(240vw);
-    opacity: 0.4;
-}
+.background span {
+    display: none;
 
-.background div:nth-child(1) {
-    background: linear-gradient(132deg, #7f2d95 0.00%, #dedede 100.00%);
-    width: 67%;
-    padding-top: 67%;
-    left: 34%;
-    top: 100%;
-    transform: translateX(-50%) translateY(-50%);
 }
 

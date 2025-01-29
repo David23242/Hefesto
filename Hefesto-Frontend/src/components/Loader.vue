@@ -19,8 +19,10 @@
   }
 
   .ball {
-    background: #fff;
+    background: rgba(96, 4, 132, 0.7);
   }
+
+  
 
   .ball:nth-child(2) {
     animation-delay: 0.25s;

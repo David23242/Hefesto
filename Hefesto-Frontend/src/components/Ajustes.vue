@@ -142,9 +142,13 @@ const cards = [
 ];
 
 const backgrounds = [
-  { id: 'style1', color: '#3E1E68', name: 'Fondo 1' },
-  { id: 'style2', color: '#1E3A57', name: 'Fondo 2' },
-  { id: 'style3', color: '#3D1E57', name: 'Fondo 3' }
+  { id: 'style1', color: '#1e1f1e', name: 'Animado Negro' },
+  { id: 'style2', color: '#74309c', name: 'Animado Morado' },
+  { id: 'style3', color: '#a78ab8', name: 'Morado' },
+  { id: 'style4', color: '#ADD8E6', name: 'Azul' },
+  { id: 'style5', color: '#90EE90', name: 'Verde' },
+  { id: 'style6', color: '#FF69B4', name: 'Rosa' },
+  { id: 'style7', color: '#FF4500', name: 'Rojo' }
 ];
 
 // Computados
