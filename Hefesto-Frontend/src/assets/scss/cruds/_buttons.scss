@@ -1,0 +1,67 @@
+@import './_variables.scss';
+
+.glassmorphic-btn {
+  background: $white-02;
+  backdrop-filter: blur(5px);
+  border: 1px solid $white-03;
+  color: $text-color;
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  cursor: pointer;
+
+  &:hover {
+    background: $white-03;
+  }
+
+  &.pagination-btn {
+    padding: 8px 16px;
+  }
+}
+
+.add-campus-btn,
+.add-maquina-btn,
+.add-seccion-btn,
+.add-user-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.danger-btn {
+  background: $red-07;
+  color: white;
+  margin-left: 10px;
+
+  &:hover {
+    background: $red-09;
+  }
+}
+
+.enable-btn {
+  background: $green-07;
+  color: white;
+
+  &:hover {
+    background: $green-09;
+  }
+}
+
+.edit-btn {
+  margin-left: 5px;
+  background: $white-02;
+  backdrop-filter: blur(5px);
+  border: 1px solid $white-03;
+  color: $text-color;
+  padding: 5px 10px;
+  border-radius: 50px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  cursor: pointer;
+
+  &:hover {
+    background: $white-03;
+  }
+}

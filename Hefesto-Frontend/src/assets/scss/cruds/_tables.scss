@@ -1,0 +1,39 @@
+@import './_variables.scss';
+
+.glassmorphic-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 10px;
+
+  th,
+  td {
+    background: $white-02;
+    padding: 15px;
+    line-height: 1.8;
+    text-align: left;
+    border: none;
+  }
+
+  th {
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+
+  tr {
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: $white-03;
+    }
+  }
+}
+
+.table-container {
+  overflow-x: auto;
+  margin-bottom: 20px;
+}
+
+.action-cell {
+  display: flex;
+  align-items: center;
+}

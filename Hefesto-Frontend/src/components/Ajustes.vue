@@ -1,407 +1,371 @@
 <template>
   <div class="container-fluid h-100">
-    <div class="row h-100">
-      <div class="col-md-6 h-100">
-        <div class="d-flex flex-column h-100">
-          <button class="glass-card large-card grow" @click="openPopup('perfil')">
-            <div class="card-body text-center">
-              <img src="../assets/images/icons/profile.svg" alt="Foto de perfil" class="img-fluid mb-3 huge-icon">
-              <p class="card-text huge-text">Foto de perfil</p>
-            </div>
-          </button>
-          <button class="glass-card large-card grow" @click="openPopup('pwd')">
-            <div class="card-body text-center">
-              <img src="../assets/images/icons/password.svg" alt="Contraseña" class="img-fluid mb-3 huge-icon">
-              <p class="card-text huge-text">Contraseña</p>
-            </div>
-          </button>
+    <div class="card-grid h-100">
+      <!-- Tarjetas configuración -->
+      <button 
+        v-for="(card, index) in cards"
+        :key="index"
+        class="glass-card large-card grow full-height"
+        @click="openPopup(card.type)"
+      >
+        <div class="card-body text-center d-flex flex-column justify-content-center align-items-center">
+          <img 
+            :src="`../src/assets/images/icons/${card.icon}.svg`" 
+            :alt="card.altText" 
+            class="img-fluid mb-3 huge-icon"
+          >
+          <p class="card-text huge-text">{{ card.text }}</p>
         </div>
-      </div>
-      <div class="col-md-6 h-100">
-        <button class="glass-card large-card full-height grow" @click="openPopup('fondo')">
-          <div class="card-body text-center d-flex flex-column justify-content-center align-items-center">
-            <img src="../assets/images/icons/wallpa.svg" alt="Fondo de pantalla" class="img-fluid mb-3 huge-icon">
-            <p class="card-text huge-text">Fondo de pantalla</p>
-          </div>
-        </button>
-      </div>
+      </button>
     </div>
+
+    <!-- Popup principal -->
     <GlassmorphicPopup
-      :visible="popupVisible"
-      :title="popupTitle"
-      :subtitle="popupSubtitle"
-      :closeButtonText="popupCloseButtonText"
-      :actionButtonText="popupActionButtonText"
+      :visible="popup.visible"
+      :title="popup.title"
+      :subtitle="popup.subtitle"
+      :closeButtonText="popup.closeText"
+      :actionButtonText="popup.actionText"
       :imageUrl="userImagePath"
       @close="closePopup"
       @action="handleAction"
       @image-changed="updateProfileImage"
     >
-    <template #popup-content v-if="popupType === 'perfil'">
-      <label for="profile-image">Foto de perfil:</label>
-      <input type="file" id="profile-image" @change="onFileChange">
-    </template>
-    <template #popup-content v-else-if="popupType === 'pwd'">
-      <label for="current_password">Contraseña actual:</label>
-      <input type="password" id="current_password" class="form-control" placeholder="Tu contraseña actual" v-model="currentPassword">
-      <label for="new_password">Contraseña nueva:</label>
-      <input type="password" id="new_password" class="form-control" placeholder="La contraseña nueva" v-model="newPassword">
-    </template>
-    <template #popup-content v-else-if="popupType === 'fondo'">
-      <div class="background-options">
-      <div class="background-option" @click="changeBackground('style1')">
-        <div class="preview" :style="{ background: '#3E1E68' }"></div>
-        <p>Fondo 1</p>
-      </div>
-      <div class="background-option" @click="changeBackground('style2')">
-        <div class="preview" :style="{ background: '#1E3A57' }"></div>
-        <p>Fondo 2</p>
-      </div>
-      <div class="background-option" @click="changeBackground('style3')">
-        <div class="preview" :style="{ background: '#3D1E57' }"></div>
-        <p>Fondo 3</p>
-      </div>
-      <!-- Agrega más opciones según sea necesario -->
-    </div>
-    </template>
-    <template #popup-content v-else-if="popupType === 'aviso'">
+      <!-- Contenido para editar perfil -->
+      <template v-if="popup.type === 'perfil'" #popup-content>
+        <div class="centered-file-upload" @dragover.prevent @drop="handleDrop">
+          <form class="file-upload-form">
+            <label for="file" class="file-upload-label">
+              <div class="file-upload-design">
+                <svg viewBox="0 0 640 512" height="1em">
+                  <path
+                    d="M144 480C64.5 480 0 415.5 0 336c0-62.8 40.2-116.2 96.2-135.9c-.1-2.7-.2-5.4-.2-8.1c0-88.4 71.6-160 160-160c59.3 0 111 32.2 138.7 80.2C409.9 102 428.3 96 448 96c53 0 96 43 96 96c0 12.2-2.3 23.8-6.4 34.6C596 238.4 640 290.1 640 352c0 70.7-57.3 128-128 128H144zm79-217c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l39-39V392c0 13.3 10.7 24 24 24s24-10.7 24-24V257.9l39 39c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0l-80 80z"
+                  ></path>
+                </svg>
+                <span v-if="!fileState.uploadSuccess" class="browse-button">Seleccionar archivo</span>
+                <div v-if="fileState.uploadSuccess" class="success-message">
+                  Imagen cargada correctamente!
+                </div>
+              </div>
+              <input id="file" type="file" @change="handleFileSelect" style="display: none;" />
+            </label>
+          </form>
+        </div>
+      </template>
 
-    </template>
-  
-    </GlassmorphicPopup>
-    <GlassmorphicPopup
-      :visible="popupRespuestaVisible"
-      :title="popupTitle"
-      :subtitle="popupSubtitle"
-      :closeButtonText="popupCloseButtonText"
-      :actionButtonText="popupActionButtonText"
-      :imageUrl="userImagePath"
-      @close="closePopup"
-      @action="handleAction"
-      @image-changed="updateProfileImage">
-      
-      <template #popup-content v-if="popupType === 'imagenCargada'">
+      <!-- Contenido para cambiar contraseña -->
+      <template v-else-if="popup.type === 'pwd'" #popup-content>
+        <label for="current_password">Contraseña actual:</label>
+        <input
+          type="password"
+          id="current_password"
+          class="form-control"
+          placeholder="Tu contraseña actual"
+          v-model="passwordState.current"
+        />
+        <label for="new_password">Contraseña nueva:</label>
+        <input
+          type="password"
+          id="new_password"
+          class="form-control"
+          placeholder="La contraseña nueva"
+          v-model="passwordState.new"
+        />
+      </template>
 
+      <!-- Contenido para fondos de pantalla -->
+      <template v-else-if="popup.type === 'fondo'" #popup-content>
+        <div class="background-options">
+          <div 
+            v-for="(bg, index) in backgrounds"
+            :key="index"
+            class="background-option" 
+            @click="changeBackground(bg.id)"
+          >
+            <div class="preview" :style="{ background: bg.color }"></div>
+            <p>{{ bg.name }}</p>
+          </div>
+        </div>
       </template>
     </GlassmorphicPopup>
-
-
   </div>
-
 </template>
 
 <script setup>
-import GlassmorphicPopup from './GlassmorphicPopup.vue';
-import 'bootstrap/dist/css/bootstrap.css';
-import 'bootstrap/dist/js/bootstrap.js';
-import { ref, onMounted, computed } from 'vue';
-import axios from 'axios';
-import { useToast } from 'vue-toastification';
+import GlassmorphicPopup from "./GlassmorphicPopup.vue";
+import { ref, onMounted, computed, reactive } from "vue";
+import axios from "axios";
+import { useToast } from "vue-toastification";
 
-const API_AUTH_URL = import.meta.env.VITE_API_AUTH_URL;
-const ME_URL = `${API_AUTH_URL}/auth/me`;
-const UPDATE_PROFILE_IMAGE_URL = `${API_AUTH_URL}/image/upload`;
-const RESET_PWD_URL = `${API_AUTH_URL}/usuario/reset_password`;
-
-const popupVisible = ref(false);
-const popupRespuestaVisible  = ref(false);
-const popupType = ref(null);
-const popupTitle = ref(null);
-const popupSubtitle = ref(null);
-const popupCloseButtonText = ref(null);
-const popupActionButtonText = ref(null);
-const userPicture = ref(null);
-const userName = ref(null);
-const selectedFile = ref(null);
-const userLastName = ref(null);
-const currentPassword = ref(null);
-const newPassword = ref(null);
-const titulo = ref(null);
-const toast = useToast();
-
-// Estado para rastrear el estilo actual
-const currentStyle = ref(null);
-
-const openPopup = (type) => {
-  popupVisible.value = true;
-  popupType.value = type;
-
-  if (type === 'perfil') {
-    popupTitle.value = 'Editar perfil';
-    popupSubtitle.value = 'Edita tu perfil';
-    popupCloseButtonText.value = 'Cerrar';
-    popupActionButtonText.value = 'Guardar';
-  } else if (type === 'pwd') {
-    popupTitle.value = 'Cambiar contraseña';
-    popupSubtitle.value = 'Introduce tu nueva contraseña';
-    popupCloseButtonText.value = 'Cerrar';
-    popupActionButtonText.value = 'Guardar';
-  } else if (type === 'fondo') {
-    popupTitle.value = 'Cambiar fondo';
-    popupSubtitle.value = 'Elige tu fondo';
-    popupCloseButtonText.value = 'Cerrar';
-    popupActionButtonText.value = 'Aceptar';
-  }
-  else if (type === 'aviso') {
-    popupVisible.value = true;
-    popupTitle.value = titulo.value;
-    popupActionButtonText.value = "Volver";
-  } 
+// Constantes de configuración
+const API_URLS = {
+  auth: import.meta.env.VITE_API_AUTH_URL,
+  get me() { return `${this.auth}/auth/me` },
+  get image() { return `${this.auth}/image/upload` },
+  get password() { return `${this.auth}/usuario/reset_password` }
 };
 
-const closePopup = () => {  
-  popupVisible.value = false; 
+// Estados reactivos
+const popup = reactive({
+  visible: false,
+  type: null,
+  title: null,
+  subtitle: null,
+  closeText: 'Cerrar',
+  actionText: 'Guardar'
+});
+
+const userData = reactive({
+  picture: null,
+  name: null,
+  lastName: null
+});
+
+const fileState = reactive({
+  selected: null,
+  uploadSuccess: false
+});
+
+const passwordState = reactive({
+  current: null,
+  new: null
+});
+
+const currentStyle = ref(null);
+const toast = useToast();
+
+// Configuraciones de componentes
+const cards = [
+  { type: 'perfil', icon: 'profile', altText: 'Foto de perfil', text: 'Foto de perfil' },
+  { type: 'pwd', icon: 'password', altText: 'Contraseña', text: 'Contraseña' },
+  { type: 'fondo', icon: 'wallpa', altText: 'Fondo de pantalla', text: 'Fondo de pantalla' }
+];
+
+const backgrounds = [
+  { id: 'style1', color: '#1e1f1e', name: 'Animado Negro' },
+  { id: 'style2', color: '#74309c', name: 'Animado Morado' },
+  { id: 'style3', color: '#a78ab8', name: 'Morado' },
+  { id: 'style4', color: '#ADD8E6', name: 'Azul' },
+  { id: 'style5', color: '#90EE90', name: 'Verde' },
+  { id: 'style6', color: '#FF69B4', name: 'Rosa' },
+  { id: 'style7', color: '#FF4500', name: 'Rojo' }
+];
+
+// Computados
+const userImagePath = computed(() => 
+  userData.picture 
+    ? `../src/assets/images/userpicture/${userData.picture}`
+    : null
+);
+
+// Métodos principales
+const openPopup = (type) => {
+  Object.assign(popup, {
+    visible: true,
+    type,
+    title: getPopupTitle(type),
+    actionText: type === 'fondo' ? 'Aceptar' : 'Guardar'
+  });
+  
+  fileState.uploadSuccess = false;
+};
+
+const closePopup = () => {
+  popup.visible = false;
 };
 
 const handleAction = async () => {
-  if (popupType.value === 'perfil') {
-    // Handle profile picture update logic here
-    await updateProfileImage();
-  } 
-  else if(popupType.value === 'aviso'){
-    location.reload();
-  }
-  else if (popupType.value === 'pwd'){
-    await resetPwd();
-  }
-  else if (popupType.value ==='avisoPwd'){
-    console.log('hola');
-  }
-  else {
-    //alert(`Action clicked on ${popupType.value}`);
-  }
+  const actions = {
+    pwd: resetPwd,
+    perfil: updateProfileImage
+  };
+  
+  if (actions[popup.type]) await actions[popup.type]();
   closePopup();
 };
 
-const onFileChange = (event) => {
-  selectedFile.value = event.target.files[0];
+// Métodos de archivos
+const handleFileSelect = (event) => {
+  fileState.selected = event.target.files[0];
+  updateProfileImage();
+};
+
+const handleDrop = (event) => {
+  event.preventDefault();
+  fileState.selected = event.dataTransfer.files[0];
+  updateProfileImage();
 };
 
 const updateProfileImage = async () => {
-  if (!selectedFile.value) return;
-  const token = localStorage.getItem('token');
+  if (!fileState.selected) return;
+  
+  const formData = new FormData();
+  formData.append("image", fileState.selected);
+
   try {
-    const formData = new FormData();
-    formData.append('image', selectedFile.value);
-    const response_upload = await axios.post(UPDATE_PROFILE_IMAGE_URL, formData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'multipart/form-data'
-      },
+    const { data } = await axios.post(API_URLS.image, formData, {
+      headers: authHeader()
     });
-
-    if (response_upload.status !== 200) {
-      console.log(response);
-      throw new Error(response_upload.error);
-    }
-
-    userPicture.value = response_upload.data.path;
-    closePopup();
-    toast.success("La imagen ha sido carga con éxito");
-    location.reload();
+    
+    userData.picture = data.path;
+    fileState.uploadSuccess = true;
+    toast.success("Imagen actualizada correctamente");
   } catch (error) {
-    if (error.response) {
-      // El servidor respondió con un código de estado fuera del rango 2xx
-      console.error('Error response:', error.response.data);
-      alert(`Failed to upload profile image: ${error.response.data.message || error.response.data}`);
-    } else if (error.request) {
-      // La solicitud fue hecha pero no se recibió respuesta
-      console.error('Error request:', error.request);
-      alert('Failed to upload profile image: No response from server.');
-    } else {
-      // Algo pasó al configurar la solicitud que desencadenó un error
-      console.error('Error message:', error.message);
-      alert(`Failed to upload profile image: ${error.message}`);
-    }
+    handleError(error, "Error al actualizar la imagen");
   }
 };
 
+// Métodos de contraseña
 const resetPwd = async () => {
-  const token = localStorage.getItem('token');
   try {
-
-    const response = await axios.put(RESET_PWD_URL, {
-      current_password:currentPassword.value,
-      new_password:newPassword.value
-    }, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
-    });
-
-    if (response.status !== 200) {
-      console.log(response);
-      throw new Error(response_upload.error);
-    }
-
-    console.log("Contraseña modificada");
-    closePopup();
-    toast.success("La contraseña ha sido modificada correctamente!");
-  } 
-  catch (error) {
-    if (error.response) {
-      // El servidor respondió con un código de estado fuera del rango 2xx
-      console.error('Error response:', error.response.data);
-      closePopup();
-     toast.error(error.response.data.data);
-     
-      console.log(`${error.response.data.data || error.response.data}`);
-    } else if (error.request) {
-      // La solicitud fue hecha pero no se recibió respuesta
-      closePopup();
-      toast.error('Error request:', error.request);
-    } else {
-      // Algo pasó al configurar la solicitud que desencadenó un error
-      closePopup();
-      toast.error('Error message:', error.message);
+    await axios.put(API_URLS.password, {
+      current_password: passwordState.current,
+      new_password: passwordState.new
+    }, { headers: authHeader() });
+    
+    toast.success("Contraseña actualizada correctamente");
+    passwordState.current = null;
+    passwordState.new = null;
+  } catch (error) {
+    handleError(error, "Error al cambiar contraseña");
   }
-  }
-}
+};
 
-
-
-const userImagePath = computed(() => {
-  return userPicture.value ? `../src/assets/images/userpicture/${userPicture.value}` : null;
-});
-
-onMounted(async () => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    try {
-      const response = await axios.get(ME_URL, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      userName.value = response.data.name;
-      userLastName.value = response.data.primer_apellido;
-      userPicture.value = response.data.foto_perfil;
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-    }
-  }
-
-  const savedBackground = localStorage.getItem('selectedBackground');
-  if (savedBackground) {
-    changeBackground(savedBackground);
-  }
-});
-
-// Función para cambiar el fondo
+// Métodos de fondo
 const changeBackground = (styleName) => {
-  // Eliminar el estilo anterior si existe
-  if (currentStyle.value) {
-    const oldStyle = document.getElementById('dynamic-background-style');
-    if (oldStyle) {
-      oldStyle.remove();
-    }
-  }
-
-  // Crear un nuevo elemento <link> para cargar el nuevo estilo
-  const link = document.createElement('link');
-  link.id = 'dynamic-background-style';
-  link.rel = 'stylesheet';
-  link.href = `/src/assets/backgrounds/${styleName}.css`; // Ruta al archivo CSS
-  document.head.appendChild(link);
-
-  // Guardar la selección en localStorage
-  localStorage.setItem('selectedBackground', styleName);
-
-  // Actualizar el estado
+  removeCurrentBackground();
+  applyNewBackground(styleName);
+  localStorage.setItem("selectedBackground", styleName);
   currentStyle.value = styleName;
-
-  // Cerrar el popup
   closePopup();
 };
 
+// Helpers
+const getPopupTitle = (type) => ({
+  perfil: 'Editar perfil',
+  pwd: 'Cambiar contraseña',
+  fondo: 'Cambiar fondo'
+}[type]);
+
+const authHeader = () => ({
+  Authorization: `Bearer ${localStorage.getItem("token")}`
+});
+
+const removeCurrentBackground = () => {
+  const oldStyle = document.getElementById("dynamic-background-style");
+  oldStyle?.remove();
+};
+
+const applyNewBackground = (styleName) => {
+  const link = document.createElement("link");
+  link.id = "dynamic-background-style";
+  link.rel = "stylesheet";
+  link.href = `../src/assets/backgrounds/${styleName}.css`;
+  document.head.appendChild(link);
+};
+
+const handleError = (error, message) => {
+  console.error(message, error);
+  toast.error(error.response?.data?.message || message);
+};
+
+// Ciclo de vida
+onMounted(async () => {
+  try {
+    const { data } = await axios.get(API_URLS.me, { headers: authHeader() });
+    Object.assign(userData, {
+      name: data.name,
+      lastName: data.primer_apellido,
+      picture: data.foto_perfil
+    });
+  } catch (error) {
+    handleError(error, "Error al cargar datos del usuario");
+  }
+
+  const savedBackground = localStorage.getItem("selectedBackground");
+  if (savedBackground) changeBackground(savedBackground);
+});
 </script>
 
 <style lang="scss" scoped>
+/* Variables SCSS reutilizables */
+$white-opacities: (
+  01: 0.1,
+  02: 0.2,
+  03: 0.3,
+  05: 0.5,
+  06: 0.6,
+  07: 0.7,
+  08: 0.8,
+  09: 0.9
+);
 
-$white-01: rgba(255, 255, 255, 0.1);
-$white-02: rgba(255, 255, 255, 0.2);
-$white-03: rgba(255, 255, 255, 0.3);
-$white-05: rgba(255, 255, 255, 0.5);
-$white-06: rgba(255, 255, 255, 0.6);
-$white-07: rgba(255, 255, 255, 0.7);
-$white-08: rgba(255, 255, 255, 0.8);
-$white-09: rgba(255, 255, 255, 0.9);
+@function white($opacity) {
+  @return rgba(255, 255, 255, map-get($white-opacities, $opacity));
+}
 
+/* Mixins reutilizables */
+@mixin glass-card($opacity: 09) {
+  background: white($opacity) !important;
+  backdrop-filter: blur(8px);
+  border: 1px solid white($opacity) !important;
+  box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.3);
+  border-radius: 16px;
+  transition: transform 0.2s ease-in-out;
+  
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+/* Estilos optimizados */
 .container-fluid {
   padding: 15px;
 }
 
+.card-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  height: 100%;
+  justify-content: center;
+  align-content: flex-start;
+
+  @media (min-width: 768px) {
+    flex-wrap: nowrap;
+  }
+}
+
 .glass-card {
-  background: $white-02; 
-  border-radius: 16px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-  border: 1px solid $white-03; 
-  margin-bottom: 15px;
+  @include glass-card();
   width: 100%;
   height: auto;
   padding: 25px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
+  margin-bottom: 15px;
   cursor: pointer;
-  transition: transform 0.2s ease-in-out;
 
-  &:hover {
-    transform: scale(1.05);
-  }
-
-  .card-text {
-    margin-top: 0;
-    color: #333;
-  }
-
-  img {
-    max-width: 50px;
-    height: auto;
-  }
-
-  &.large-card {
-    padding: 45px;
-  }
-
-  &.full-height {
-    height: 100%;
-  }
-
-  &.grow {
-    flex-grow: 1;
-  }
-
-  .huge-icon {
-    max-width: 120px;
-  }
-
-  .huge-text {
-    font-size: 1.8rem;
-  }
+  &.large-card { padding: 45px; }
+  
+  .huge-icon { max-width: 120px; }
+  .huge-text { font-size: 1.8rem; }
 }
 
 .background-options {
   display: flex;
   flex-direction: column;
-  gap: 10px; 
+  gap: 10px;
 
   .background-option {
     display: flex;
     align-items: center;
-    cursor: pointer;
-    background: $white-02; 
-    border-radius: 8px;
     padding: 8px;
+    cursor: pointer;
+    background: white(02);
+    border-radius: 8px;
     transition: background 0.3s ease;
 
-    &:hover {
-      background: $white-03; 
-    }
-
+    &:hover { background: white(03); }
+    
     .preview {
       width: 30px;
       height: 30px;
@@ -411,4 +375,45 @@ $white-09: rgba(255, 255, 255, 0.9);
   }
 }
 
+.file-upload-form {
+  width: fit-content;
+  height: fit-content;
+
+  .file-upload-label {
+    cursor: pointer;
+    background-color: #ddd;
+    padding: 30px 70px;
+    border-radius: 40px;
+    border: 2px dashed #525252;
+
+    .file-upload-design {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+
+      svg { height: 50px; fill: #525252; margin-bottom: 20px; }
+      
+      .browse-button {
+        background-color: #525252;
+        padding: 5px 15px;
+        border-radius: 10px;
+        color: white;
+        transition: background 0.3s;
+
+        &:hover { background-color: #0e0e0e; }
+      }
+    }
+  }
+}
+
+.centered-file-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+
+.success-message { color: green; }
 </style>

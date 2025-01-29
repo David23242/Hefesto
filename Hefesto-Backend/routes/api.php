@@ -61,6 +61,7 @@ Route::prefix('v1')->group(function () {
             Route::put('cerrar_incidencia/', [TecnicoIncidenciaController::class, 'cerrarIncidencia'])->middleware('tecnico');
             Route::get('incidencia_asignada', [TecnicoIncidenciaController::class, 'getIncidenciasAsignadas'])->middleware('tecnico');
             Route::get('/all', [TecnicoIncidenciaController::class, 'getAllTecnicoIncidencias'])->middleware('tecnico');
+            Route::get('detalle_incidencia_tecnicos/{id_incidencia}', [TecnicoIncidenciaController::class, 'getDetalleIncidenciaTecnicos'])->middleware(['tecnico']);
         });
     });
 
@@ -71,7 +72,7 @@ Route::prefix('v1')->group(function () {
     Route::prefix('campus')->group(function () {
         Route::middleware('auth:api')->group(function () {
             Route::post('store', [CampusController::class, 'store'])->middleware('admin');
-            Route::get('all',[CampusController::class, 'all'])->middleware('admin');
+            Route::get('all',[CampusController::class, 'all']);
              Route::get('show/{id}',[CampusController::class, 'show'])->middleware('admin');
             Route::put('update/{id}',[CampusController::class, 'update'])->middleware('admin');
             Route::put('enable/{id}',[CampusController::class, 'enable'])->middleware('admin');
@@ -83,7 +84,7 @@ Route::prefix('v1')->group(function () {
     Route::prefix('seccion')->group(function () {
         Route::middleware('auth:api')->group(function () {
             Route::post('store', [SeccionController::class, 'store'])->middleware('admin');
-           Route::get('all',[SeccionController::class, 'all'])->middleware('admin');
+           Route::get('all',[SeccionController::class, 'all']);
             Route::get('show/{seccion}',[SeccionController::class, 'show'])->middleware('admin');
              Route::put('update/{seccion}',[SeccionController::class, 'update'])->middleware('admin');
               Route::put('enable/{seccion}',[SeccionController::class, 'enable'])->middleware('admin');
@@ -136,7 +137,7 @@ Route::prefix('v1')->group(function () {
     });
     Route::prefix('usuario')->group(function () {
         Route::middleware('auth:api')->group(function () {
-           Route::get('all',[UserController::class, 'all'])->middleware('admin');
+           Route::get('all',[UserController::class, 'all']);
            Route::get('show/{usuario}',[UserController::class, 'show'])->middleware('admin');
             Route::put('update/{usuario}',[UserController::class, 'update'])->middleware('admin');
             Route::put('enable/{usuario}',[UserController::class, 'enable'])->middleware('admin');

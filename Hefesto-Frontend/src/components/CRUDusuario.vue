@@ -296,12 +296,6 @@ const handleAction = async () => {
       const url = isTecnico.value ? REGISTER_TECNICO_URL : REGISTER_URL;
       const payload = {};
 
-      // Debugging: Imprime los valores de los campos justo antes de construir el payload
-      console.log('Valor de userData.nombre:', userData.value.name);
-      console.log('Valor de userData.email:', userData.value.email);
-      console.log('Valor de userData.password:', userData.value.password);
-      console.log('Valor de userData.id_campus:', userData.value.id_campus);
-
       // Campos requeridos
       if (!userData.value.name) {
           alert('El campo Nombre es obligatorio.');
@@ -335,8 +329,6 @@ const handleAction = async () => {
           payload.segundo_apellido = userData.value.segundo_apellido;
       }
 
-      // Debugging: Imprime el payload antes de enviarlo
-      console.log('Payload a enviar:', payload);
 
       const token = localStorage.getItem('token');
       const headers = {
@@ -344,7 +336,6 @@ const handleAction = async () => {
       };
 
       const response = await axios.post(url, payload, { headers });
-      console.log('Registro exitoso:', response.data);
        toast.success("Usuario registrado exitosamente!");
 
       // Restablecer los valores de userData a sus valores iniciales
@@ -377,7 +368,6 @@ try {
     Authorization: `Bearer ${token}`,
   };
      const response = await axios.get(`${USUARIO_ALL_URL}?per_page=20&page=${page}`, { headers });
-    console.log(response.data.data);
     users.value = response.data.data.data;
     pagination.value = {
         current_page: response.data.data.current_page,
@@ -407,7 +397,6 @@ if (event.target.checked) {
       selectedUsers.value.splice(index, 1);
   }
 }
-console.log('Usuarios seleccionados:', selectedUsers.value);
 };
 
 // Función para seleccionar todos los usuarios
@@ -417,7 +406,6 @@ if (allSelected.value) {
 } else {
   selectedUsers.value = [];
 }
-console.log('Usuarios seleccionados:', selectedUsers.value);
 };
 // Computed para sincronizar el checkbox selectAll
 allSelected.value = computed({
@@ -490,7 +478,6 @@ const handleEditUser = async (user) => {
   }
 
 
-console.log('Editing user:', user);
 };
 const updateUser = async () =>{
   try {
@@ -501,7 +488,6 @@ const updateUser = async () =>{
       const payload = {...editUserData.value}
       delete payload.id;
     const response = await axios.put(`${USUARIO_UPDATE_URL}/${editUserData.value.id}`,payload,{headers})
-       console.log("Respuesta de la api: ", response);
        toast.success("Usuario modificado exitosamente!");
       closeEditModal();
         fetchUsers(pagination.value.current_page)
@@ -526,7 +512,6 @@ if (confirm('¿Estás seguro de que quieres eliminar los usuarios seleccionados?
     // Eliminar usuarios individualmente
     for (const userId of selectedUsers.value) {
       await axios.put(`${USUARIO_DELETE_URL}/${userId}`, { habilitado: 0 }, { headers });
-      console.log(`Usuario ${userId} deshabilitado`);
     }
 
     toast.success('Usuarios deshabilitados exitosamente.');
@@ -573,331 +558,15 @@ try {
 </script>
 
 <style lang="scss" scoped>
-// Definición de colores
-$white-01: rgba(255, 255, 255, 0.1);
-$white-02: rgba(255, 255, 255, 0.2);
-$white-03: rgba(255, 255, 255, 0.3);
-$white-05: rgba(255, 255, 255, 0.5);
-$white-18: rgba(255, 255, 255, 0.18);
-$purple-07: rgba(96, 4, 132, 0.7);
-$purple-1: rgba(96, 4, 132, 1);
-$purple-focus: rgba(96, 4, 132, 0.719);
-$red-07: rgba(220, 53, 69, 0.7);
-$red-09: rgba(220, 53, 69, 0.9);
-$green-07: rgba(40, 167, 69, 0.7);
-$green-09: rgba(40, 167, 69, 0.9);
-$gray-3C: #3C3C3C;
-$gray-90: #9098A9;
-$shadow-color: rgba(31, 38, 135, 0.37);
-$text-color: #333;
-
-// Estilos
-.glassmorphic-container {
-  background: $white-01;
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  padding: 30px;
-  box-shadow: 0 8px 32px 0 $shadow-color;
-  border: 1px solid $white-18;
-  color: $text-color;
-}
-
-.pagination {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  margin-bottom: 20px;
-  align-items: center;
-}
-
-.glassmorphic-btn {
-  background: $white-02;
-  backdrop-filter: blur(5px);
-  border: 1px solid $white-03;
-  color: $text-color;
-  padding: 10px 20px;
-  border-radius: 50px;
-  font-weight: bold;
-  transition: all 0.3s ease;
-  cursor: pointer;
-
-  &:hover {
-    background: $white-03;
-  }
-}
-
-.glassmorphic-form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.glassmorphic-input,
-.glassmorphic-select {
-  background: $white-02;
-  border: 1px solid $white-03;
-  border-radius: 10px;
-  padding: 10px;
-  color: $text-color;
-  width: 300px;
-}
-
-.glassmorphic-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0 10px;
-
-  th,
-  td {
-    background: $white-02;
-    padding: 15px;
-    text-align: left;
-    border: none;
-  }
-
-  th {
-    font-weight: bold;
-    text-transform: uppercase;
-  }
-
-  tr {
-    transition: all 0.3s ease;
-
-    &:hover {
-      background: $white-03;
-    }
-  }
-}
-
-.user-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.add-user-btn {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.btn-icon {
-  width: 20px;
-  height: 20px;
-}
-
-.search-bar {
-  margin-bottom: 20px;
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-.danger-btn {
-  background: $red-07;
-  color: white;
-
-  &:hover {
-    background: $red-09;
-  }
-}
-
-.enable-btn {
-  background: $green-07;
-  color: white;
-
-  &:hover {
-    background: $green-09;
-  }
-}
-
-.form-title,
-.list-title {
-  font-size: 24px;
-  margin-bottom: 20px;
-  color: $text-color;
-}
-
-.radio-group {
-  display: flex;
-  flex-direction: row;
-  gap: 20px;
-  margin-bottom: 10px;
-  align-items: center;
-}
-
-.radio-label {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.glassmorphic-checkbox {
-  appearance: none;
-  width: 20px;
-  height: 20px;
-  border: 2px solid $white-05;
-  border-radius: 5px;
-  background: $white-02;
-  cursor: pointer;
-
-  &:checked {
-    background: $purple-07;
-  }
-}
-
-.table-container {
-  overflow-x: auto;
-  margin-bottom: 20px;
-}
-
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 120px;
-  height: 34px;
-
-  input {
-    display: none;
-  }
-
-  .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: $gray-3C;
-    transition: 0.4s;
-    border-radius: 34px;
-
-    &:before {
-      position: absolute;
-      content: "";
-      height: 26px;
-      width: 26px;
-      left: 4px;
-      bottom: 4px;
-      background-color: white;
-      transition: 0.4s;
-      border-radius: 50%;
-    }
-
-    &:after {
-      content: 'DESABILITADO';
-      color: white;
-      display: block;
-      position: absolute;
-      transform: translate(-50%, -50%);
-      top: 50%;
-      left: 60%;
-      font-size: 10px;
-    }
-  }
-
-  input:checked + .slider {
-    background-color: $purple-1;
-  }
-
-  input:focus + .slider {
-    box-shadow: 0 0 1px $purple-focus;
-  }
-
-  input:checked + .slider:before {
-    transform: translateX(85px);
-  }
-
-  input:checked + .slider:after {
-    content: 'HABILITADO';
-    left: 47%;
-  }
-}
-
-.edit-btn {
-  margin-left: 5px;
-  background: $white-02;
-  backdrop-filter: blur(5px);
-  border: 1px solid $white-03;
-  color: $text-color;
-  padding: 5px 10px;
-  border-radius: 50px;
-  font-weight: bold;
-  transition: all 0.3s ease;
-  cursor: pointer;
-
-  &:hover {
-    background: $white-03;
-  }
-}
-
-.action-cell {
-  display: flex;
-  align-items: center;
-}
-
-.form-group {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-
-  label {
-    width: 150px;
-    text-align: left;
-  }
-}
-
-.checkbox-wrapper-47 {
-  margin-right: 15px;
-
-  input[type="radio"] {
-    display: none;
-    visibility: hidden;
-  }
-
-  label {
-    position: relative;
-    padding-left: 2em;
-    padding-right: 1em;
-    line-height: 2;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-
-    &:before {
-      box-sizing: border-box;
-      content: " ";
-      position: absolute;
-      top: 0.3em;
-      left: 0;
-      display: block;
-      width: 1.4em;
-      height: 1.4em;
-      border: 2px solid $gray-90;
-      border-radius: 6px;
-      z-index: -1;
-    }
-  }
-
-  input[type=radio]:checked + label {
-    padding-left: 1em;
-    color: white;
-
-    &:before {
-      top: 0;
-      width: 100%;
-      height: 2em;
-      background: $purple-1;
-      border-color: $purple-1;
-    }
-  }
-
-  label,
-  label::before {
-    transition: 0.25s all ease;
-  }
-}
-</style> 
+  @import '@/assets/scss/cruds/_variables.scss';
+  @import '@/assets/scss/cruds/_glassmorphic.scss';
+  @import '@/assets/scss/cruds/_buttons.scss';
+  @import '@/assets/scss/cruds/_forms.scss';
+  @import '@/assets/scss/cruds/_tables.scss';
+  @import '@/assets/scss/cruds/_pagination.scss';
+  @import '@/assets/scss/cruds/_switches.scss';
+  @import '@/assets/scss/cruds/_checkboxes.scss';
+  @import '@/assets/scss/cruds/_typography.scss';
+  @import '@/assets/scss/cruds/_icons.scss';
+  @import '@/assets/scss/cruds/_avatars.scss';
+</style>
