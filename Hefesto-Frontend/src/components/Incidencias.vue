@@ -939,8 +939,6 @@ const closeTecnicoDetailsPopup = () => {
 </script>
 
 <style lang="scss" scoped>
-// Estilos CSS (sin cambios, se asume que ya están optimizados y funcionales)
-// ... (mismo código CSS proporcionado anteriormente) ...
 $color-white: #fff;
 $color-light-gray: #f8f8f8;
 $color-gray: #ddd;

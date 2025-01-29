@@ -30,7 +30,7 @@
     <div :class="['sidebar p-0 d-flex flex-column', { 'collapsed': isSidebarCollapsed }]">
       <!-- Logo del dashboard -->
       <div class="logo mb-5 p-4">
-        <img src="../assets/images/icons/logos.png" alt="Logo" class="img-fluid mb-4" style="max-width: 150px;">
+        <img :src="logoImg" alt="Logo" class="img-fluid mb-4" style="max-width: 150px;">
       </div>
 
       <!-- Navegación del sidebar -->
@@ -50,7 +50,7 @@
 
       <!-- Botón para cerrar sesión -->
       <button @click="logout" class="nav-link mt-auto d-flex align-items-center">
-        <img src="../assets/images/icons/cerrar.svg" class="me-3" alt="" aria-hidden="true" />
+        <img :src="cerrarImg" class="me-3" alt="" aria-hidden="true" />
         <span>Cerrar sesión</span>
       </button>
     </div>
@@ -107,6 +107,16 @@ import { ref, shallowRef, defineAsyncComponent, onMounted, computed, watch } fro
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 
+// Importa las imágenes
+import logoImg from '../assets/images/icons/logos.png';
+import ticketsIcon from '../assets/images/icons/tickets.svg';  // Ruta corregida: ../assets/...
+import mantenimientoIcon from '../assets/images/icons/mantenimiento.svg';
+import ajustesIcon from '../assets/images/icons/ajustes.svg';
+import administracionIcon from '../assets/images/icons/administracion.svg';
+import panelIcon from '../assets/images/icons/panel.svg';
+import cerrarImg from '../assets/images/icons/cerrar.svg'
+
+
 // Uso del router de Vue
 const router = useRouter();
 
@@ -134,28 +144,28 @@ const Administracion = defineAsyncComponent(() => import('../components/Administ
 
 // Elementos base del menú
 const baseMenuItems = [
-  { name: 'Incidencias', icon: '../src/assets/images/icons/tickets.svg', to: '/incidencias' },
-  { name: 'Mantenimiento', icon: '../src/assets/images/icons/mantenimiento.svg', to: '/mantenimiento' },
-  { name: 'Ajustes', icon: '../src/assets/images/icons/ajustes.svg', to: '/ajustes' },
+  { name: 'Incidencias', icon: ticketsIcon, to: '/incidencias' },
+  { name: 'Mantenimiento', icon: mantenimientoIcon, to: '/mantenimiento' },
+  { name: 'Ajustes', icon: ajustesIcon, to: '/ajustes' },
 ];
 
 // Elementos del menú filtrados por rol
 const allMenuItems = {
   administrador: [
-    { name: 'Panel', icon: '../src/assets/images/icons/panel.svg', to: '/dashboard' },
+    { name: 'Panel', icon: panelIcon, to: '/dashboard' },
     ...baseMenuItems,
-    { name: 'Administracion', icon: '../src/assets/images/icons/administracion.svg', to: '/administracion' },
+    { name: 'Administracion', icon: administracionIcon, to: '/administracion' },
   ],
   operario: [
-    { name: 'Panel', icon: '../src/assets/images/icons/panel.svg', to: '/dashboard' },
-    { name: 'Incidencias', icon: '../src/assets/images/icons/tickets.svg', to: '/incidencias' },
-    { name: 'Ajustes', icon: '../src/assets/images/icons/ajustes.svg', to: '/ajustes' },
+    { name: 'Panel', icon: panelIcon, to: '/dashboard' },
+    { name: 'Incidencias', icon: ticketsIcon, to: '/incidencias' },
+    { name: 'Ajustes', icon: ajustesIcon, to: '/ajustes' },
   ],
   tecnico: [
-    { name: 'Panel', icon: '../src/assets/images/icons/panel.svg', to: '/dashboard' },
-    { name: 'Incidencias', icon: '../src/assets/images/icons/tickets.svg', to: '/incidencias' },
-    { name: 'Mantenimiento', icon: '../src/assets/images/icons/mantenimiento.svg', to: '/mantenimiento' },
-    { name: 'Ajustes', icon: '../src/assets/images/icons/ajustes.svg', to: '/ajustes' },
+    { name: 'Panel', icon: panelIcon, to: '/dashboard' },
+    { name: 'Incidencias', icon: ticketsIcon, to: '/incidencias' },
+    { name: 'Mantenimiento', icon: mantenimientoIcon, to: '/mantenimiento' },
+    { name: 'Ajustes', icon: ajustesIcon, to: '/ajustes' },
   ],
 };
 
@@ -215,9 +225,14 @@ onMounted(async () => {
       userLastName.value = response.data.primer_apellido;
       userPicture.value = response.data.foto_perfil;
 
-      // Set initial component after user role is loaded, default to 'Panel'
-      activeItem.value = 'Panel'; // Or determine based on route, etc.
-      componenteActual.value = Panel; // Load Panel initially
+      // Set initial component after user role is loaded
+      if (userRole.value === 'operario') {
+        activeItem.value = 'Incidencias';
+        componenteActual.value = Incidencias;
+      } else {
+        activeItem.value = 'Panel'; // Default to 'Panel' for other roles
+        componenteActual.value = Panel;
+      }
 
     } catch (error) {
       console.error('Error fetching user data:', error);
